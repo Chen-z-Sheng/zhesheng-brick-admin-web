@@ -13,7 +13,7 @@ function donationConsole() {
   const chalk = require('chalk')
   console.log(
     chalk.green(
-      `> 欢迎使用vue-admin-better，github开源地址：https://github.com/zxwk1998/vue-admin-better`
+      `> 欢迎使用vue-admin-better，github开源地址：https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git`
     )
   )
   console.log(

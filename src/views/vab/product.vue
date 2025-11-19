@@ -3,7 +3,7 @@
     <el-card shadow="never">
       <template #header>
         <div class="card-header">
-          <span>产品管理</span>
+          <span>行情管理</span>
           <div class="header-actions">
             <el-input
               v-model="searchText"
@@ -12,148 +12,259 @@
               style="width: 200px; margin-right: 10px"
             >
               <template #prefix>
-                <el-icon><Search /></el-icon>
+                <el-icon>
+                  <Search />
+                </el-icon>
               </template>
             </el-input>
-            <el-button type="primary" @click="showAddProductDialog">添加产品</el-button>
+            <el-button
+              type="primary"
+              @click="showAddProductDialog"
+            >添加产品</el-button>
           </div>
         </div>
       </template>
-      
-      <el-tabs v-model="activeTab" @tab-change="handleTabChange">
-        <el-tab-pane label="所有产品" name="all">
-          <el-table 
-            :data="filteredProducts" 
+
+      <el-tabs
+        v-model="activeTab"
+        @tab-change="handleTabChange"
+      >
+        <el-tab-pane
+          label="所有产品"
+          name="all"
+        >
+          <el-table
+            :data="filteredProducts"
             style="width: 100%"
             row-key="id"
             v-loading="loading"
           >
-            <el-table-column prop="name" label="产品名称" min-width="200">
+            <el-table-column
+              prop="name"
+              label="产品名称"
+              min-width="200"
+            >
               <template #default="{ row }">
                 <div class="product-name">
-                  <el-image 
-                    :src="row.image" 
-                    fit="cover" 
+                  <el-image
+                    :src="row.image"
+                    fit="cover"
                     style="width: 40px; height: 40px; border-radius: 4px"
                   />
                   <span style="margin-left: 10px">{{ row.name }}</span>
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="category" label="产品分类" width="120" />
-            <el-table-column prop="brand" label="品牌" width="120" />
-            <el-table-column prop="price" label="价格" width="100">
+            <el-table-column
+              prop="category"
+              label="产品分类"
+              width="120"
+            />
+            <el-table-column
+              prop="brand"
+              label="品牌"
+              width="120"
+            />
+            <el-table-column
+              prop="price"
+              label="价格"
+              width="100"
+            >
               <template #default="{ row }">
                 ¥{{ row.price }}
               </template>
             </el-table-column>
-            <el-table-column prop="stock" label="库存" width="100">
+            <el-table-column
+              prop="stock"
+              label="收货数量"
+              width="100"
+            >
               <template #default="{ row }">
                 <el-tag :type="getStockType(row.stock)">
                   {{ row.stock }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="状态" width="100">
+            <el-table-column
+              label="状态"
+              width="100"
+            >
               <template #default="{ row }">
                 <el-tag :type="getStatusType(row.status)">
                   {{ getStatusText(row.status) }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="createTime" label="创建时间" width="180" />
-            <el-table-column label="操作" width="200">
+            <el-table-column
+              prop="createTime"
+              label="创建时间"
+              width="180"
+            />
+            <el-table-column
+              label="操作"
+              width="200"
+            >
               <template #default="{ row }">
-                <el-button type="text" @click="viewProduct(row)">查看</el-button>
-                <el-button type="text" @click="editProduct(row)">编辑</el-button>
-                <el-button type="text" @click="deleteProduct(row)">删除</el-button>
+                <el-button
+                  type="text"
+                  @click="viewProduct(row)"
+                >查看</el-button>
+                <el-button
+                  type="text"
+                  @click="editProduct(row)"
+                >编辑</el-button>
+                <el-button
+                  type="text"
+                  @click="deleteProduct(row)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        
-        <el-tab-pane label="在售产品" name="onsale">
-          <el-table 
-            :data="onsaleProducts" 
+
+        <el-tab-pane
+          label="在售产品"
+          name="onsale"
+        >
+          <el-table
+            :data="onsaleProducts"
             style="width: 100%"
             row-key="id"
           >
-            <el-table-column prop="name" label="产品名称" min-width="200">
+            <el-table-column
+              prop="name"
+              label="产品名称"
+              min-width="200"
+            >
               <template #default="{ row }">
                 <div class="product-name">
-                  <el-image 
-                    :src="row.image" 
-                    fit="cover" 
+                  <el-image
+                    :src="row.image"
+                    fit="cover"
                     style="width: 40px; height: 40px; border-radius: 4px"
                   />
                   <span style="margin-left: 10px">{{ row.name }}</span>
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="category" label="产品分类" width="120" />
-            <el-table-column prop="brand" label="品牌" width="120" />
-            <el-table-column prop="price" label="价格" width="100">
+            <el-table-column
+              prop="category"
+              label="产品分类"
+              width="120"
+            />
+            <el-table-column
+              prop="brand"
+              label="品牌"
+              width="120"
+            />
+            <el-table-column
+              prop="price"
+              label="价格"
+              width="100"
+            >
               <template #default="{ row }">
                 ¥{{ row.price }}
               </template>
             </el-table-column>
-            <el-table-column prop="stock" label="库存" width="100">
+            <el-table-column
+              prop="stock"
+              label="库存"
+              width="100"
+            >
               <template #default="{ row }">
                 <el-tag :type="getStockType(row.stock)">
                   {{ row.stock }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="150">
+            <el-table-column
+              label="操作"
+              width="150"
+            >
               <template #default="{ row }">
-                <el-button type="text" @click="viewProduct(row)">查看</el-button>
-                <el-button type="text" @click="editProduct(row)">编辑</el-button>
+                <el-button
+                  type="text"
+                  @click="viewProduct(row)"
+                >查看</el-button>
+                <el-button
+                  type="text"
+                  @click="editProduct(row)"
+                >编辑</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        
-        <el-tab-pane label="缺货产品" name="outofstock">
-          <el-table 
-            :data="outOfStockProducts" 
+
+        <el-tab-pane
+          label="缺货产品"
+          name="outofstock"
+        >
+          <el-table
+            :data="outOfStockProducts"
             style="width: 100%"
             row-key="id"
           >
-            <el-table-column prop="name" label="产品名称" min-width="200">
+            <el-table-column
+              prop="name"
+              label="产品名称"
+              min-width="200"
+            >
               <template #default="{ row }">
                 <div class="product-name">
-                  <el-image 
-                    :src="row.image" 
-                    fit="cover" 
+                  <el-image
+                    :src="row.image"
+                    fit="cover"
                     style="width: 40px; height: 40px; border-radius: 4px"
                   />
                   <span style="margin-left: 10px">{{ row.name }}</span>
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="category" label="产品分类" width="120" />
-            <el-table-column prop="brand" label="品牌" width="120" />
-            <el-table-column prop="price" label="价格" width="100">
+            <el-table-column
+              prop="category"
+              label="产品分类"
+              width="120"
+            />
+            <el-table-column
+              prop="brand"
+              label="品牌"
+              width="120"
+            />
+            <el-table-column
+              prop="price"
+              label="价格"
+              width="100"
+            >
               <template #default="{ row }">
                 ¥{{ row.price }}
               </template>
             </el-table-column>
-            <el-table-column prop="stock" label="库存" width="100">
+            <el-table-column
+              prop="stock"
+              label="库存"
+              width="100"
+            >
               <template #default="{ row }">
                 <el-tag :type="getStockType(row.stock)">
                   {{ row.stock }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="150">
+            <el-table-column
+              label="操作"
+              width="150"
+            >
               <template #default="{ row }">
-                <el-button type="text" @click="editProduct(row)">补货</el-button>
+                <el-button
+                  type="text"
+                  @click="editProduct(row)"
+                >补货</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-tab-pane>
       </el-tabs>
-      
+
       <div class="pagination-container">
         <el-pagination
           v-model:current-page="currentPage"
@@ -166,10 +277,10 @@
         />
       </div>
     </el-card>
-    
+
     <!-- 添加/编辑产品对话框 -->
-    <el-dialog 
-      v-model="productDialogVisible" 
+    <el-dialog
+      v-model="productDialogVisible"
       :title="editingProduct ? '编辑产品' : '添加产品'"
       width="800px"
     >
@@ -181,12 +292,22 @@
       >
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="产品名称" prop="name">
+            <el-form-item
+              label="产品名称"
+              prop="name"
+            >
               <el-input v-model="productForm.name" />
             </el-form-item>
-            
-            <el-form-item label="产品分类" prop="category">
-              <el-select v-model="productForm.category" placeholder="请选择产品分类" style="width: 100%">
+
+            <el-form-item
+              label="产品分类"
+              prop="category"
+            >
+              <el-select
+                v-model="productForm.category"
+                placeholder="请选择产品分类"
+                style="width: 100%"
+              >
                 <el-option
                   v-for="category in categories"
                   :key="category.id"
@@ -195,39 +316,64 @@
                 />
               </el-select>
             </el-form-item>
-            
-            <el-form-item label="品牌" prop="brand">
+
+            <el-form-item
+              label="品牌"
+              prop="brand"
+            >
               <el-input v-model="productForm.brand" />
             </el-form-item>
-            
-            <el-form-item label="价格" prop="price">
-              <el-input-number 
-                v-model="productForm.price" 
+
+            <el-form-item
+              label="价格"
+              prop="price"
+            >
+              <el-input-number
+                v-model="productForm.price"
                 :min="0"
                 :step="0.01"
                 controls-position="right"
                 style="width: 100%"
               />
             </el-form-item>
-            
-            <el-form-item label="库存" prop="stock">
-              <el-input-number 
-                v-model="productForm.stock" 
+
+            <el-form-item
+              label="库存"
+              prop="stock"
+            >
+              <el-input-number
+                v-model="productForm.stock"
                 :min="0"
                 controls-position="right"
                 style="width: 100%"
               />
             </el-form-item>
-            
-            <el-form-item label="状态" prop="status">
-              <el-select v-model="productForm.status" placeholder="请选择状态" style="width: 100%">
-                <el-option label="在售" value="onsale"></el-option>
-                <el-option label="下架" value="offsale"></el-option>
-                <el-option label="缺货" value="outofstock"></el-option>
+
+            <el-form-item
+              label="状态"
+              prop="status"
+            >
+              <el-select
+                v-model="productForm.status"
+                placeholder="请选择状态"
+                style="width: 100%"
+              >
+                <el-option
+                  label="在售"
+                  value="onsale"
+                ></el-option>
+                <el-option
+                  label="下架"
+                  value="offsale"
+                ></el-option>
+                <el-option
+                  label="缺货"
+                  value="outofstock"
+                ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          
+
           <el-col :span="12">
             <el-form-item label="产品图片">
               <el-upload
@@ -237,19 +383,27 @@
                 :on-success="handleImageSuccess"
                 :before-upload="beforeImageUpload"
               >
-                <img 
-                  v-if="productForm.image" 
-                  :src="productForm.image" 
-                  class="avatar" 
+                <img
+                  v-if="productForm.image"
+                  :src="productForm.image"
+                  class="avatar"
                   alt="Product Image"
                 />
-                <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+                <el-icon
+                  v-else
+                  class="avatar-uploader-icon"
+                >
+                  <Plus />
+                </el-icon>
               </el-upload>
             </el-form-item>
-            
-            <el-form-item label="产品描述" prop="description">
-              <el-input 
-                v-model="productForm.description" 
+
+            <el-form-item
+              label="产品描述"
+              prop="description"
+            >
+              <el-input
+                v-model="productForm.description"
                 type="textarea"
                 :rows="5"
                 placeholder="请输入产品描述"
@@ -258,12 +412,12 @@
           </el-col>
         </el-row>
       </el-form>
-      
+
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="productDialogVisible = false">取消</el-button>
-          <el-button 
-            type="primary" 
+          <el-button
+            type="primary"
             @click="saveProduct"
           >
             保存
@@ -271,28 +425,34 @@
         </span>
       </template>
     </el-dialog>
-    
+
     <!-- 产品详情对话框 -->
-    <el-dialog 
-      v-model="detailDialogVisible" 
+    <el-dialog
+      v-model="detailDialogVisible"
       title="产品详情"
       width="800px"
     >
       <el-row :gutter="20">
         <el-col :span="8">
           <div class="product-image-detail">
-            <el-image 
-              :src="detailProduct.image" 
-              fit="cover" 
+            <el-image
+              :src="detailProduct.image"
+              fit="cover"
               style="width: 100%; height: 300px; border-radius: 8px"
             />
           </div>
         </el-col>
         <el-col :span="16">
-          <el-descriptions :column="1" border>
-            <el-descriptions-item label="产品名称">{{ detailProduct.name }}</el-descriptions-item>
-            <el-descriptions-item label="产品分类">{{ detailProduct.category }}</el-descriptions-item>
-            <el-descriptions-item label="品牌">{{ detailProduct.brand }}</el-descriptions-item>
+          <el-descriptions
+            :column="1"
+            border
+          >
+            <el-descriptions-item
+              label="产品名称">{{ detailProduct.name }}</el-descriptions-item>
+            <el-descriptions-item
+              label="产品分类">{{ detailProduct.category }}</el-descriptions-item>
+            <el-descriptions-item
+              label="品牌">{{ detailProduct.brand }}</el-descriptions-item>
             <el-descriptions-item label="价格">
               <span class="product-price">¥{{ detailProduct.price }}</span>
             </el-descriptions-item>
@@ -306,35 +466,78 @@
                 {{ getStatusText(detailProduct.status) }}
               </el-tag>
             </el-descriptions-item>
-            <el-descriptions-item label="创建时间">{{ detailProduct.createTime }}</el-descriptions-item>
+            <el-descriptions-item
+              label="创建时间">{{ detailProduct.createTime }}</el-descriptions-item>
           </el-descriptions>
         </el-col>
       </el-row>
-      
+
       <el-divider>产品描述</el-divider>
-      
+
       <div class="product-description">
         {{ detailProduct.description }}
       </div>
-      
-      <el-tabs v-model="productActiveTab" style="margin-top: 20px">
-        <el-tab-pane label="销售记录" name="sales">
-          <el-table :data="productSales" style="width: 100%">
-            <el-table-column prop="orderId" label="订单号" width="150" />
-            <el-table-column prop="customer" label="客户" width="150" />
-            <el-table-column prop="quantity" label="数量" width="100" />
-            <el-table-column prop="amount" label="金额" width="120">
+
+      <el-tabs
+        v-model="productActiveTab"
+        style="margin-top: 20px"
+      >
+        <el-tab-pane
+          label="销售记录"
+          name="sales"
+        >
+          <el-table
+            :data="productSales"
+            style="width: 100%"
+          >
+            <el-table-column
+              prop="orderId"
+              label="订单号"
+              width="150"
+            />
+            <el-table-column
+              prop="customer"
+              label="客户"
+              width="150"
+            />
+            <el-table-column
+              prop="quantity"
+              label="数量"
+              width="100"
+            />
+            <el-table-column
+              prop="amount"
+              label="金额"
+              width="120"
+            >
               <template #default="{ row }">
                 ¥{{ row.amount.toLocaleString() }}
               </template>
             </el-table-column>
-            <el-table-column prop="date" label="销售时间" width="180" />
+            <el-table-column
+              prop="date"
+              label="销售时间"
+              width="180"
+            />
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="评价" name="reviews">
-          <el-table :data="productReviews" style="width: 100%">
-            <el-table-column prop="customer" label="客户" width="150" />
-            <el-table-column label="评分" width="120">
+        <el-tab-pane
+          label="评价"
+          name="reviews"
+        >
+          <el-table
+            :data="productReviews"
+            style="width: 100%"
+          >
+            <el-table-column
+              prop="customer"
+              label="客户"
+              width="150"
+            />
+            <el-table-column
+              label="评分"
+              width="120"
+            >
               <template #default="{ row }">
                 <el-rate
                   v-model="row.rating"
@@ -345,16 +548,26 @@
                 />
               </template>
             </el-table-column>
-            <el-table-column prop="content" label="评价内容" />
-            <el-table-column prop="date" label="评价时间" width="180" />
+            <el-table-column
+              prop="content"
+              label="评价内容"
+            />
+            <el-table-column
+              prop="date"
+              label="评价时间"
+              width="180"
+            />
           </el-table>
         </el-tab-pane>
       </el-tabs>
-      
+
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="detailDialogVisible = false">关闭</el-button>
-          <el-button type="primary" @click="editProduct(detailProduct)">编辑</el-button>
+          <el-button
+            type="primary"
+            @click="editProduct(detailProduct)"
+          >编辑</el-button>
         </span>
       </template>
     </el-dialog>
@@ -370,7 +583,7 @@ export default {
     Search,
     Plus
   },
-  data() {
+  data () {
     return {
       activeTab: "all",
       productActiveTab: "sales",
@@ -515,43 +728,43 @@ export default {
     };
   },
   computed: {
-    filteredProducts() {
+    filteredProducts () {
       let result = this.products;
-      
+
       // 搜索过滤
       if (this.searchText) {
-        result = result.filter(product => 
+        result = result.filter(product =>
           product.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
           product.category.toLowerCase().includes(this.searchText.toLowerCase()) ||
           product.brand.toLowerCase().includes(this.searchText.toLowerCase())
         );
       }
-      
+
       // 分页处理
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
       return result.slice(start, end);
     },
-    onsaleProducts() {
+    onsaleProducts () {
       return this.products.filter(product => product.status === "onsale");
     },
-    outOfStockProducts() {
+    outOfStockProducts () {
       return this.products.filter(product => product.stock === 0);
     }
   },
   methods: {
-    handleTabChange(tab) {
+    handleTabChange (tab) {
       this.activeTab = tab;
       this.currentPage = 1;
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.pageSize = val;
       this.currentPage = 1;
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val;
     },
-    getStatusText(status) {
+    getStatusText (status) {
       const statusMap = {
         "onsale": "在售",
         "offsale": "下架",
@@ -559,7 +772,7 @@ export default {
       };
       return statusMap[status] || status;
     },
-    getStatusType(status) {
+    getStatusType (status) {
       const typeMap = {
         "onsale": "success",
         "offsale": "info",
@@ -567,7 +780,7 @@ export default {
       };
       return typeMap[status] || "info";
     },
-    getStockType(stock) {
+    getStockType (stock) {
       if (stock === 0) {
         return "danger";
       } else if (stock < 10) {
@@ -575,7 +788,7 @@ export default {
       }
       return "success";
     },
-    showAddProductDialog() {
+    showAddProductDialog () {
       this.editingProduct = null;
       this.productForm = {
         name: "",
@@ -592,17 +805,17 @@ export default {
         this.$refs.productFormRef.resetFields();
       });
     },
-    editProduct(product) {
+    editProduct (product) {
       this.editingProduct = product;
       this.productForm = { ...product };
       this.productDialogVisible = true;
       this.detailDialogVisible = false;
     },
-    viewProduct(product) {
+    viewProduct (product) {
       this.detailProduct = { ...product };
       this.detailDialogVisible = true;
     },
-    deleteProduct(product) {
+    deleteProduct (product) {
       this.$confirm(`确定要删除产品"${product.name}"吗？`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -618,7 +831,7 @@ export default {
         this.$message.info("已取消删除");
       });
     },
-    saveProduct() {
+    saveProduct () {
       this.$refs.productFormRef.validate((valid) => {
         if (valid) {
           if (this.editingProduct) {
@@ -643,10 +856,10 @@ export default {
         }
       });
     },
-    handleImageSuccess(response, file) {
+    handleImageSuccess (response, file) {
       this.productForm.image = URL.createObjectURL(file.raw);
     },
-    beforeImageUpload(file) {
+    beforeImageUpload (file) {
       const isJPG = file.type === "image/jpeg" || file.type === "image/png";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
@@ -665,35 +878,35 @@ export default {
 <style lang="scss" scoped>
 .product-container {
   padding: 20px;
-  
+
   .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: bold;
   }
-  
+
   .product-name {
     display: flex;
     align-items: center;
   }
-  
+
   .product-price {
     font-size: 18px;
     font-weight: bold;
     color: #fa541c;
   }
-  
+
   .product-description {
     line-height: 1.8;
     color: #666;
   }
-  
+
   .pagination-container {
     margin-top: 20px;
     text-align: right;
   }
-  
+
   .avatar-uploader .avatar {
     width: 178px;
     height: 178px;

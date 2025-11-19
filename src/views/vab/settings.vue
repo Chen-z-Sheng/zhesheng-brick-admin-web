@@ -13,15 +13,15 @@
             <el-form-item label="网站名称" prop="siteName">
               <el-input v-model="basicForm.siteName" />
             </el-form-item>
-            
+
             <el-form-item label="网站描述" prop="description">
-              <el-input 
-                v-model="basicForm.description" 
+              <el-input
+                v-model="basicForm.description"
                 type="textarea"
                 :rows="3"
               />
             </el-form-item>
-            
+
             <el-form-item label="网站Logo">
               <el-upload
                 class="avatar-uploader"
@@ -30,27 +30,27 @@
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload"
               >
-                <img 
-                  v-if="basicForm.logo" 
-                  :src="basicForm.logo" 
-                  class="avatar" 
+                <img
+                  v-if="basicForm.logo"
+                  :src="basicForm.logo"
+                  class="avatar"
                   alt="Logo"
                 />
                 <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
               </el-upload>
             </el-form-item>
-            
+
             <el-form-item label="启用维护模式">
               <el-switch v-model="basicForm.maintenanceMode" />
             </el-form-item>
-            
+
             <el-form-item>
               <el-button type="primary" @click="saveBasicSettings">保存设置</el-button>
               <el-button @click="resetBasicForm">重置</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        
+
         <el-tab-pane label="安全设置" name="security">
           <el-form
             ref="securityFormRef"
@@ -60,40 +60,40 @@
             style="max-width: 600px"
           >
             <el-form-item label="密码最小长度" prop="minPasswordLength">
-              <el-input-number 
-                v-model="securityForm.minPasswordLength" 
-                :min="6" 
-                :max="20" 
+              <el-input-number
+                v-model="securityForm.minPasswordLength"
+                :min="6"
+                :max="20"
               />
             </el-form-item>
-            
+
             <el-form-item label="启用双重认证">
               <el-switch v-model="securityForm.twoFactorAuth" />
             </el-form-item>
-            
+
             <el-form-item label="会话超时时间(分钟)" prop="sessionTimeout">
-              <el-input-number 
-                v-model="securityForm.sessionTimeout" 
-                :min="1" 
-                :max="1440" 
+              <el-input-number
+                v-model="securityForm.sessionTimeout"
+                :min="1"
+                :max="1440"
               />
             </el-form-item>
-            
+
             <el-form-item label="登录失败尝试次数" prop="maxLoginAttempts">
-              <el-input-number 
-                v-model="securityForm.maxLoginAttempts" 
-                :min="1" 
-                :max="10" 
+              <el-input-number
+                v-model="securityForm.maxLoginAttempts"
+                :min="1"
+                :max="10"
               />
             </el-form-item>
-            
+
             <el-form-item>
               <el-button type="primary" @click="saveSecuritySettings">保存设置</el-button>
               <el-button @click="resetSecurityForm">重置</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
-        
+
         <el-tab-pane label="邮件设置" name="email">
           <el-form
             ref="emailFormRef"
@@ -105,31 +105,31 @@
             <el-form-item label="SMTP服务器" prop="smtpServer">
               <el-input v-model="emailForm.smtpServer" />
             </el-form-item>
-            
+
             <el-form-item label="SMTP端口" prop="smtpPort">
-              <el-input-number 
-                v-model="emailForm.smtpPort" 
-                :min="1" 
-                :max="65535" 
+              <el-input-number
+                v-model="emailForm.smtpPort"
+                :min="1"
+                :max="65535"
               />
             </el-form-item>
-            
+
             <el-form-item label="用户名" prop="username">
               <el-input v-model="emailForm.username" />
             </el-form-item>
-            
+
             <el-form-item label="密码" prop="password">
-              <el-input 
-                v-model="emailForm.password" 
+              <el-input
+                v-model="emailForm.password"
                 type="password"
                 show-password
               />
             </el-form-item>
-            
+
             <el-form-item label="发件人邮箱" prop="senderEmail">
               <el-input v-model="emailForm.senderEmail" />
             </el-form-item>
-            
+
             <el-form-item>
               <el-button type="primary" @click="saveEmailSettings">保存设置</el-button>
               <el-button @click="resetEmailForm">重置</el-button>
@@ -154,8 +154,8 @@ export default {
     return {
       activeTab: "basic",
       basicForm: {
-        siteName: "Vue Admin Better",
-        description: "一个基于Vue 3和Element Plus的后台管理系统",
+        siteName: "泽晟搬砖助手后台管理系统",
+        description: "致力打造一个安全、高效、可靠的撸货平台，使撸货变得更简单，更透明，更安全！",
         logo: "",
         maintenanceMode: false
       },
@@ -284,11 +284,11 @@ export default {
 <style lang="scss" scoped>
 .settings-container {
   padding: 20px;
-  
+
   :deep(.el-tabs__content) {
     padding: 20px 0;
   }
-  
+
   .avatar-uploader .avatar {
     width: 120px;
     height: 120px;

@@ -1,5 +1,5 @@
 /**
- * @author https://github.com/zxwk1998/vue-admin-better （不想保留author可删除）
+ * @author https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git （不想保留author可删除）
  * @description router全局配置，如有必要可分文件抽离，其中asyncRoutes只有在intelligence模式下才会用到，vip文档中已提供路由的基础图标与小清新图标的配置方案，请仔细阅读
  */
 
@@ -79,15 +79,6 @@ export const asyncRoutes = [
     meta: { title: "组件", icon: "box-open", defaultOpen: true },
     children: [
       {
-        path: "vue3Demo",
-        name: "Vue3Demo",
-        component: () => import("@/views/vab/vue3Demo/index.vue"),
-        meta: {
-          title: "Vue 3 示例",
-          permissions: ["admin"],
-        },
-      },
-      {
         path: "table",
         name: "Table",
         component: () => import("@/views/vab/table.vue"),
@@ -96,24 +87,24 @@ export const asyncRoutes = [
           permissions: ["admin"],
         },
       },
-      {
-        path: "tree",
-        name: "Tree",
-        component: () => import("@/views/vab/tree.vue"),
-        meta: {
-          title: "树形控件",
-          permissions: ["admin"],
-        },
-      },
-      {
-        path: "icon",
-        name: "Icon",
-        component: () => import("@/views/vab/icon.vue"),
-        meta: {
-          title: "图标",
-          permissions: ["admin"],
-        },
-      },
+      // {
+      //   path: "tree",
+      //   name: "Tree",
+      //   component: () => import("@/views/vab/tree.vue"),
+      //   meta: {
+      //     title: "树形控件",
+      //     permissions: ["admin"],
+      //   },
+      // },
+      // {
+      //   path: "icon",
+      //   name: "Icon",
+      //   component: () => import("@/views/vab/icon.vue"),
+      //   meta: {
+      //     title: "图标",
+      //     permissions: ["admin"],
+      //   },
+      // },
       {
         path: "form",
         name: "Form",
@@ -123,15 +114,15 @@ export const asyncRoutes = [
           permissions: ["admin"],
         },
       },
-      {
-        path: "chart",
-        name: "Chart",
-        component: () => import("@/views/vab/chart.vue"),
-        meta: {
-          title: "图表",
-          permissions: ["admin"],
-        },
-      },
+      // {
+      //   path: "chart",
+      //   name: "Chart",
+      //   component: () => import("@/views/vab/chart.vue"),
+      //   meta: {
+      //     title: "图表",
+      //     permissions: ["admin"],
+      //   },
+      // },
       {
         path: "permissions",
         name: "Permissions",
@@ -141,60 +132,60 @@ export const asyncRoutes = [
           permissions: ["admin"],
         },
       },
-      {
-        path: "nested",
-        component: () => import("@/views/vab/nested.vue"),
-        name: "Nested",
-        redirect: "/vab/nested/menu1",
-        meta: {
-          title: "嵌套路由",
-          permissions: ["admin"],
-        },
-        children: [
-          {
-            path: "menu1",
-            component: () => import("@/views/vab/nested/menu1.vue"),
-            name: "Menu1",
-            redirect: "/vab/nested/menu1/menu2",
-            meta: { title: "一级菜单" },
-            children: [
-              {
-                path: "menu2",
-                component: () => import("@/views/vab/nested/menu1/menu2.vue"),
-                name: "Menu2",
-                redirect: "/vab/nested/menu1/menu2/menu3",
-                meta: { title: "二级菜单" },
-                children: [
-                  {
-                    path: "menu3",
-                    component: () => import("@/views/vab/nested/menu1/menu2/menu3.vue"),
-                    name: "Menu3",
-                    meta: { title: "三级菜单" },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        path: "editor",
-        name: "Editor",
-        component: () => import("@/views/vab/editor.vue"),
-        meta: {
-          title: "富文本编辑器",
-          permissions: ["admin"],
-        },
-      },
-      {
-        path: "upload",
-        name: "Upload",
-        component: () => import("@/views/vab/upload.vue"),
-        meta: {
-          title: "文件上传",
-          permissions: ["admin"],
-        },
-      },
+      // {
+      //   path: "nested",
+      //   component: () => import("@/views/vab/nested.vue"),
+      //   name: "Nested",
+      //   redirect: "/vab/nested/menu1",
+      //   meta: {
+      //     title: "嵌套路由",
+      //     permissions: ["admin"],
+      //   },
+      //   children: [
+      //     {
+      //       path: "menu1",
+      //       component: () => import("@/views/vab/nested/menu1.vue"),
+      //       name: "Menu1",
+      //       redirect: "/vab/nested/menu1/menu2",
+      //       meta: { title: "一级菜单" },
+      //       children: [
+      //         {
+      //           path: "menu2",
+      //           component: () => import("@/views/vab/nested/menu1/menu2.vue"),
+      //           name: "Menu2",
+      //           redirect: "/vab/nested/menu1/menu2/menu3",
+      //           meta: { title: "二级菜单" },
+      //           children: [
+      //             {
+      //               path: "menu3",
+      //               component: () => import("@/views/vab/nested/menu1/menu2/menu3.vue"),
+      //               name: "Menu3",
+      //               meta: { title: "三级菜单" },
+      //             },
+      //           ],
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
+      // {
+      //   path: "editor",
+      //   name: "Editor",
+      //   component: () => import("@/views/vab/editor.vue"),
+      //   meta: {
+      //     title: "富文本编辑器",
+      //     permissions: ["admin"],
+      //   },
+      // },
+      // {
+      //   path: "upload",
+      //   name: "Upload",
+      //   component: () => import("@/views/vab/upload.vue"),
+      //   meta: {
+      //     title: "文件上传",
+      //     permissions: ["admin"],
+      //   },
+      // },
       {
         path: "settings",
         name: "Settings",
@@ -204,24 +195,24 @@ export const asyncRoutes = [
           permissions: ["admin"],
         },
       },
-      {
-        path: "notification",
-        name: "Notification",
-        component: () => import("@/views/vab/notification.vue"),
-        meta: {
-          title: "通知中心",
-          permissions: ["admin"],
-        },
-      },
-      {
-        path: "calendar",
-        name: "Calendar",
-        component: () => import("@/views/vab/calendar.vue"),
-        meta: {
-          title: "日历",
-          permissions: ["admin"],
-        },
-      },
+      // {
+      //   path: "notification",
+      //   name: "Notification",
+      //   component: () => import("@/views/vab/notification.vue"),
+      //   meta: {
+      //     title: "通知中心",
+      //     permissions: ["admin"],
+      //   },
+      // },
+      // {
+      //   path: "calendar",
+      //   name: "Calendar",
+      //   component: () => import("@/views/vab/calendar.vue"),
+      //   meta: {
+      //     title: "日历",
+      //     permissions: ["admin"],
+      //   },
+      // },
       {
         path: "task",
         name: "Task",
@@ -299,7 +290,7 @@ export const asyncRoutes = [
         name: "Product",
         component: () => import("@/views/vab/product.vue"),
         meta: {
-          title: "产品管理",
+          title: "行情管理",
           permissions: ["admin"],
         },
       },
@@ -321,43 +312,6 @@ export const asyncRoutes = [
       //     permissions: ["admin"],
       //   },
       // },
-    ],
-  },
-
-  {
-    path: "/external-store",
-    component: Layout,
-    meta: {
-      title: "",
-      icon: "",
-    },
-    children: [
-      {
-        path: "https://vuejs-core.cn/store",
-        meta: {
-          title: "模板市场",
-          target: "_blank",
-          icon: "box-open",
-        },
-      },
-    ],
-  },
-  {
-    path: "/external-job",
-    component: Layout,
-    meta: {
-      title: "",
-      icon: "",
-    },
-    children: [
-      {
-        path: "https://job.vuejs-core.cn/posts",
-        meta: {
-          title: "找工作",
-          target: "_blank",
-          icon: "horse-head",
-        },
-      },
     ],
   },
   {

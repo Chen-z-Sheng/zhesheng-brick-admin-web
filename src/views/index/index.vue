@@ -1,64 +1,13 @@
 <template>
   <div class="index-container">
     <el-row :gutter="20">
-      <el-col :lg="24" :md="24" :sm="24" :xl="24" :xs="24">
-        <el-alert v-if="noticeList">
-          <div
-            style="display: flex; align-items: center; justify-content: center"
-          >
-            <a
-              href="https://github.com/zxwk1998/vue-admin-better"
-              target="_blank"
-            >
-              <img
-                src="https://img.shields.io/github/stars/zxwk1998/vue-admin-better?style=flat-square&label=Stars&logo=github"
-                style="margin-right: 10px"
-              />
-            </a>
-            <p v-html="noticeList.notice"></p>
-          </div>
-        </el-alert>
-      </el-col>
       <el-col
-        v-for="(item, index) in iconList"
-        :key="index"
         :lg="6"
-        :md="6"
-        :sm="6"
-        :xl="3"
-        :xs="12"
+        :md="12"
+        :sm="24"
+        :xl="6"
+        :xs="24"
       >
-        <el-card class="icon-card" shadow="never">
-          <div class="icon-container" @click="handleIconClick(item)">
-            <div class="icon-header">
-              <div class="icon-wrapper" :style="{ background: item.color }">
-                <el-icon>
-                  <component :is="getIconComponent(item.icon)" />
-                </el-icon>
-              </div>
-              <div class="icon-title">{{ item.title }}</div>
-            </div>
-            <div class="icon-content">
-              <div class="icon-description">
-                {{ getIconDescription(item.title) }}
-              </div>
-            </div>
-            <div class="icon-footer">
-              <div class="icon-stats">
-                <div class="stat-item">
-                  <el-icon><View /></el-icon>
-                  <span>{{ getRandomViews() }}</span>
-                </div>
-                <div class="stat-item">
-                  <el-icon><Heart /></el-icon>
-                  <span>{{ getRandomLikes() }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
         <el-card shadow="never">
           <template #header>
             <span>访问量</span>
@@ -76,16 +25,23 @@
               </div>
             </div>
             <div class="chart-content">
-              <vab-chart autoresize :option="fwl" />
+              <vab-chart
+                autoresize
+                :option="fwl"
+              />
             </div>
             <div class="chart-footer">
               <div class="trend-info">
                 <div class="trend-item">
-                  <el-icon class="trend-up"><ArrowUp /></el-icon>
+                  <el-icon class="trend-up">
+                    <ArrowUp />
+                  </el-icon>
                   <span class="trend-text">较昨日增长 12.5%</span>
                 </div>
                 <div class="trend-item">
-                  <el-icon class="trend-icon"><User /></el-icon>
+                  <el-icon class="trend-icon">
+                    <User />
+                  </el-icon>
                   <span class="trend-text">活跃用户 2.3K</span>
                 </div>
               </div>
@@ -93,7 +49,13 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
+      <el-col
+        :lg="6"
+        :md="12"
+        :sm="24"
+        :xl="6"
+        :xs="24"
+      >
         <el-card shadow="never">
           <template #header>
             <span>授权数</span>
@@ -111,16 +73,23 @@
               </div>
             </div>
             <div class="chart-content">
-              <vab-chart autoresize :option="sqs" />
+              <vab-chart
+                autoresize
+                :option="sqs"
+              />
             </div>
             <div class="chart-footer">
               <div class="trend-info">
                 <div class="trend-item">
-                  <el-icon class="trend-up"><ArrowUp /></el-icon>
+                  <el-icon class="trend-up">
+                    <ArrowUp />
+                  </el-icon>
                   <span class="trend-text">较昨日增长 8.3%</span>
                 </div>
                 <div class="trend-item">
-                  <el-icon class="trend-icon"><Clock /></el-icon>
+                  <el-icon class="trend-icon">
+                    <Clock />
+                  </el-icon>
                   <span class="trend-text">今日新增 156</span>
                 </div>
               </div>
@@ -128,7 +97,13 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
+      <el-col
+        :lg="6"
+        :md="12"
+        :sm="24"
+        :xl="6"
+        :xs="24"
+      >
         <el-card shadow="never">
           <template #header>
             <span>用户活跃度</span>
@@ -146,16 +121,23 @@
               </div>
             </div>
             <div class="chart-content">
-              <vab-chart autoresize :option="userActivity" />
+              <vab-chart
+                autoresize
+                :option="userActivity"
+              />
             </div>
             <div class="chart-footer">
               <div class="trend-info">
                 <div class="trend-item">
-                  <el-icon class="trend-up"><ArrowUp /></el-icon>
+                  <el-icon class="trend-up">
+                    <ArrowUp />
+                  </el-icon>
                   <span class="trend-text">较昨日增长 15.2%</span>
                 </div>
                 <div class="trend-item">
-                  <el-icon class="trend-icon"><Clock /></el-icon>
+                  <el-icon class="trend-icon">
+                    <Clock />
+                  </el-icon>
                   <span class="trend-text">在线时长 2.5h</span>
                 </div>
               </div>
@@ -163,7 +145,13 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :lg="6" :md="12" :sm="24" :xl="6" :xs="24">
+      <el-col
+        :lg="6"
+        :md="12"
+        :sm="24"
+        :xl="6"
+        :xs="24"
+      >
         <el-card shadow="never">
           <template #header>
             <span>系统性能</span>
@@ -181,16 +169,23 @@
               </div>
             </div>
             <div class="chart-content">
-              <vab-chart autoresize :option="systemPerformance" />
+              <vab-chart
+                autoresize
+                :option="systemPerformance"
+              />
             </div>
             <div class="chart-footer">
               <div class="trend-info">
                 <div class="trend-item">
-                  <el-icon class="trend-up"><CheckCircle /></el-icon>
+                  <el-icon class="trend-up">
+                    <CheckCircle />
+                  </el-icon>
                   <span class="trend-text">运行正常</span>
                 </div>
                 <div class="trend-item">
-                  <el-icon class="trend-icon"><Monitor /></el-icon>
+                  <el-icon class="trend-icon">
+                    <Monitor />
+                  </el-icon>
                   <span class="trend-text">响应时间 120ms</span>
                 </div>
               </div>
@@ -199,8 +194,17 @@
         </el-card>
       </el-col>
 
-      <el-col :lg="24" :md="24" :sm="24" :xl="24" :xs="24">
-        <el-card class="card" shadow="never">
+      <el-col
+        :lg="24"
+        :md="24"
+        :sm="24"
+        :xl="24"
+        :xs="24"
+      >
+        <el-card
+          class="card"
+          shadow="never"
+        >
           <div slot="header">
             <span>依赖信息</span>
             <!-- <div style="float: right">部署时间:{{ updateTime }}</div> -->
@@ -338,7 +342,7 @@ export default {
     Promotion,
     Picture,
   },
-  data() {
+  data () {
     return {
       timer: 0,
       updateTime: process.env.VUE_APP_UPDATE_TIME,
@@ -550,9 +554,9 @@ export default {
                   x2: 0,
                   y2: 1,
                   colorStops: [
-                  { offset: 0, color: "#409EFF" },
-                  { offset: 1, color: "#7C3AED" },
-                ],
+                    { offset: 0, color: "#409EFF" },
+                    { offset: 1, color: "#7C3AED" },
+                  ],
                 },
                 shadowBlur: 15,
                 shadowColor: "rgba(64, 158, 255, 0.5)"
@@ -728,61 +732,9 @@ export default {
       noticeList: [],
       //其他信息
       userAgent: navigator.userAgent,
-      //卡片图标
-      iconList: [
-        {
-          icon: "video",
-          title: "视频播放器",
-          link: "https://vuejs-core.cn/shop-vite",
-          color: "#ffc069",
-        },
-        {
-          icon: "table",
-          title: "表格",
-          link: "https://vuejs-core.cn/shop-vite",
-          color: "#5cdbd3",
-        },
-        {
-          icon: "laptop-code",
-          title: "源码",
-          link: "https://github.com/zxwk1998/vue-admin-better",
-          color: "#b37feb",
-        },
-        {
-          icon: "book",
-          title: "书籍",
-          link: "https://vuejs-core.cn/shop-vite",
-          color: "#69c0ff",
-        },
-        {
-          icon: "bullhorn",
-          title: "公告",
-          link: "https://vuejs-core.cn/shop-vite",
-          color: "#ff85c0",
-        },
-        {
-          icon: "gift",
-          title: "礼物",
-          link: "https://vuejs-core.cn/shop-vite",
-          color: "#ffd666",
-        },
-
-        {
-          icon: "balance-scale-left",
-          title: "公平的世界",
-          link: "https://vuejs-core.cn/shop-vite",
-          color: "#ff9c6e",
-        },
-        {
-          icon: "coffee",
-          title: "休息一下",
-          link: "https://vuejs-core.cn/shop-vite",
-          color: "#95de64",
-        },
-      ],
     };
   },
-  created() {
+  created () {
     this.fetchData();
     const now = new Date();
     const oneDay = 3600 * 1000 * 24;
@@ -818,10 +770,10 @@ export default {
       this.fwl.series[0].data = data;
     }, 3000);
   },
-  beforeDestroy() {
+  beforeDestroy () {
     clearInterval(this.timer);
   },
-  mounted() {
+  mounted () {
     let base = +new Date(2020, 1, 1);
     let oneDay = 24 * 3600 * 1000;
     let date = [];
@@ -855,17 +807,17 @@ export default {
     }, 3000);
   },
   methods: {
-    handleClick(e) {
+    handleClick (e) {
       this.$baseMessage(`点击了${e.name},这里可以写跳转`);
     },
-    handleZrClick() {},
-    handleChangeTheme() {
+    handleZrClick () { },
+    handleChangeTheme () {
       // 不再使用事件总线
       // this.$baseEventBus.$emit('theme')
       // 直接打开主题设置
       this.drawerVisible = true;
     },
-    async fetchData() {
+    async fetchData () {
       try {
         const res = await getNoticeList();
         this.noticeList = res.data;
@@ -873,12 +825,12 @@ export default {
         console.error("获取通知列表失败:", error);
       }
     },
-    handleIconClick(item) {
+    handleIconClick (item) {
       if (item.link) {
         window.open(item.link, "_blank");
       }
     },
-    getIconDescription(title) {
+    getIconDescription (title) {
       const descriptions = {
         视频播放器: "支持多种格式的视频播放",
         表格: "功能强大的数据表格组件",
@@ -891,14 +843,14 @@ export default {
       };
       return descriptions[title] || "功能模块";
     },
-    getRandomViews() {
+    getRandomViews () {
       return `${random(100, 999)}K`;
     },
-    getRandomLikes() {
+    getRandomLikes () {
       return `${random(10, 99)}K`;
     },
     // 将FontAwesome图标名称转换为Element Plus图标组件
-    getIconComponent(iconName) {
+    getIconComponent (iconName) {
       // 映射FontAwesome图标名称到Element Plus图标
       const iconMap = {
         video: "VideoPlay",
@@ -1038,7 +990,7 @@ export default {
           border-bottom: 2px solid #dee2e6;
 
           .vab-icon {
-            color: #409EFF;
+            color: #409eff;
             margin-right: 3px;
             font-size: 1.1rem;
           }
@@ -1208,7 +1160,7 @@ export default {
           .stat-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(45deg, #409EFF, #8b5cf6);
+            background: linear-gradient(45deg, #409eff, #8b5cf6);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -1277,7 +1229,7 @@ export default {
               }
 
               &.primary-btn {
-                background: #409EFF;
+                background: #409eff;
                 border: none;
                 color: white;
 
@@ -1300,7 +1252,7 @@ export default {
             .premium-card {
               flex: 1;
               min-width: 180px;
-              background: linear-gradient(135deg, #409EFF 0%, #8b5cf6 100%);
+              background: linear-gradient(135deg, #409eff 0%, #8b5cf6 100%);
               border-radius: 15px;
               padding: 20px;
               cursor: pointer;
@@ -1395,10 +1347,10 @@ export default {
         color: #2c3e50;
 
         .vab-icon {
-            color: #409EFF;
-            margin-right: 3px;
-            font-size: 1.1rem;
-          }
+          color: #409eff;
+          margin-right: 3px;
+          font-size: 1.1rem;
+        }
       }
 
       .chart-stats {
@@ -1452,7 +1404,7 @@ export default {
           }
 
           .trend-icon {
-            color: #409EFF;
+            color: #409eff;
             margin-right: 3px;
             font-size: 0.8rem;
           }

@@ -6,7 +6,7 @@
 </p>
 </div>
 
-[![stars](https://img.shields.io/github/stars/zxwk1998/vue-admin-better?style=flat-square&logo=GitHub)](https://github.com/zxwk1998/vue-admin-better)
+[![stars](https://img.shields.io/github/stars/zxwk1998/vue-admin-better?style=flat-square&logo=GitHub)](https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git)
 [![star](https://gitee.com/chu1204505056/vue-admin-better/badge/star.svg?theme=gray)](https://gitee.com/chu1204505056/vue-admin-better)
 [![license](https://img.shields.io/github/license/zxwk1998/vue-admin-better?style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
 
@@ -38,7 +38,7 @@
 
 - [📌 Pro and plus purchase address authorization](https://vuejs-core.cn/authorization/)
 
-- [🌐 Github Warehouse address](https://github.com/zxwk1998/vue-admin-better/)
+- [🌐 Github Warehouse address](https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git/)
 
 - [🌐 Gitee Warehouse address](https://gitee.com/chu1204505056/vue-admin-better/)
 
@@ -50,18 +50,18 @@
 - [Admin Pro](https://gitee.com/chu1204505056/microsoft-store/raw/master/AdminPlus.zip)
 - [Admin Plus](https://gitee.com/chu1204505056/microsoft-store/raw/master/AdminPlus.zip)
 
-<!-- ## 🌱 Vue3.x vue3.0-antdv [Click switch branch](https://github.com/zxwk1998/vue-admin-better/tree/vue3.0-antdv)
+<!-- ## 🌱 Vue3.x vue3.0-antdv [Click switch branch](https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git/tree/vue3.0-antdv)
 
 ```bash
-git clone -b vue3.0-antdv https://github.com/zxwk1998/vue-admin-better.git
+git clone -b vue3.0-antdv https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git.git
 npm i --registry=http://mirrors.cloud.tencent.com/npm/
 npm run serve
 ``` -->
 
-## 🌱 Vue2.xmain [Click switch branch](https://github.com/zxwk1998/vue-admin-better/tree/master)
+## 🌱 Vue2.xmain [Click switch branch](https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git/tree/master)
 
 ```bash
-git clone -b master https://github.com/zxwk1998/vue-admin-better.git
+git clone -b master https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git.git
 npm i --registry=http://mirrors.cloud.tencent.com/npm/
 npm run serve
 ```

@@ -230,7 +230,7 @@ export default {
     },
     handleGetCode() {
       const url =
-        "https://github.com/zxwk1998/vue-admin-better/tree/master/src/views";
+        "https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git/tree/master/src/views";
       let path = this.$route.path + "/index.vue";
       if (path === "/vab/menu1/menu1-1/menu1-1-1/index.vue") {
         path = "/vab/nested/menu1/menu1-1/menu1-1-1/index.vue";

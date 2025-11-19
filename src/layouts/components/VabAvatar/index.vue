@@ -128,7 +128,7 @@ const handleCommand = (command) => {
       settings();
       break;
     case "github":
-      window.open("https://github.com/zxwk1998/vue-admin-better");
+      window.open("https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git");
       break;
     case "gitee":
       window.open("https://gitee.com/chu1204505056/vue-admin-better");

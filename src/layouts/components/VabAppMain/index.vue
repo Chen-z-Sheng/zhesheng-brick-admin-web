@@ -7,9 +7,7 @@
       </keep-alive>
     </transition>
     <footer v-show="footerCopyright" class="footer-copyright">
-      Copyright
-      <el-icon><CopyDocument /></el-icon>
-      vue3-admin-better 开源免费版 {{ fullYear }}
+      泽晟搬砖助手管理系统 {{ fullYear }}
     </footer>
   </div>
 </template>

@@ -75,8 +75,8 @@
 
       <div class="login-image">
         <div class="overlay">
-          <h2 class="slogan">高效 · 便捷 · 安全</h2>
-          <p class="description">基于Vue3的现代化管理系统</p>
+          <h2 class="slogan">安全·靠谱·回款快</h2>
+          <p class="description">泽晟搬砖助手管理系统</p>
         </div>
       </div>
     </div>
