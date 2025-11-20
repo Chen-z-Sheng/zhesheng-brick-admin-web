@@ -11,13 +11,13 @@ const setting = {
   // 进行编译的依赖
   transpileDependencies: [],
   //标题 （包括初次加载雪花屏的标题 页面的标题 浏览器的标题）
-  title: "泽晟撸货后台管理",
+  title: "泽晟搬砖后台管理",
   //简写
   abbreviation: "vab",
   //开发环境端口号
-  devPort: "8091",
+  devPort: "8019",
   //copyright
-  copyright: "zxwk1998",
+  copyright: "czsheng © 2025",
   //是否显示页面底部自定义版权信息
   footerCopyright: true,
   //是否显示顶部进度条

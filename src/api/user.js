@@ -1,34 +1,43 @@
 import request from "@/utils/request";
-import { tokenName } from "@/config";
 
-export async function login(data) {
+// 登录
+export async function login (data) {
   return request({
-    url: "/login",
+    url: "/auth/login",
     method: "post",
     data,
   });
 }
 
-export function getUserInfo(accessToken) {
+// 获取用户信息
+export function getUserInfo (userId) {
   return request({
-    url: "/userInfo",
-    method: "post",
-    data: {
-      [tokenName]: accessToken,
-    },
+    url: `/user/${userId}`,
+    method: "get",
   });
 }
 
-export function logout() {
+// 退出登录
+export function logout () {
   return request({
-    url: "/logout",
+    url: "/auth/logout",
     method: "post",
   });
 }
 
-export function register() {
+// 注册（你后端是 create）
+export function register (data) {
   return request({
-    url: "/register",
+    url: "/user/create",
+    method: "post",
+    data,
+  });
+}
+
+// 刷新 token（可选）
+export function refreshToken () {
+  return request({
+    url: "/auth/refresh",
     method: "post",
   });
 }

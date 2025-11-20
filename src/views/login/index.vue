@@ -21,7 +21,9 @@
               type="text"
             >
               <template #prefix>
-                <el-icon><User /></el-icon>
+                <el-icon>
+                  <User />
+                </el-icon>
               </template>
             </el-input>
           </el-form-item>
@@ -37,10 +39,15 @@
               @keyup.enter="handleLogin"
             >
               <template #prefix>
-                <el-icon><Lock /></el-icon>
+                <el-icon>
+                  <Lock />
+                </el-icon>
               </template>
             </el-input>
-            <span class="show-pwd" @click="showPwd">
+            <span
+              class="show-pwd"
+              @click="showPwd"
+            >
               <el-icon v-if="passwordType === 'password'">
                 <Hide />
               </el-icon>
@@ -52,7 +59,10 @@
 
           <div class="form-actions">
             <el-checkbox v-model="rememberMe">记住我</el-checkbox>
-            <a href="javascript:;" class="forgot-password">忘记密码?</a>
+            <a
+              href="javascript:;"
+              class="forgot-password"
+            >忘记密码?</a>
           </div>
 
           <el-button
@@ -66,7 +76,10 @@
 
           <div class="register-link">
             <span>还没有账号?</span>
-            <router-link to="/register" class="create-account">
+            <router-link
+              to="/register"
+              class="create-account"
+            >
               立即注册
             </router-link>
           </div>

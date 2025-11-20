@@ -21,7 +21,6 @@
           <img :src="avatar" alt="用户头像" class="header-avatar" />
           <div class="header-info">
             <div class="header-username">{{ username }}</div>
-            <div class="header-email">admin@example.com</div>
           </div>
         </div>
 
@@ -36,46 +35,6 @@
           <Setting class="dropdown-icon" />
           <span>系统设置</span>
         </el-dropdown-item>
-
-        <el-divider></el-divider>
-
-        <el-dropdown-item command="github" class="dropdown-item">
-          <!-- 直接使用图标组件 -->
-          <Link class="dropdown-icon" />
-          <span>GitHub 地址</span>
-        </el-dropdown-item>
-
-        <el-dropdown-item command="gitee" class="dropdown-item">
-          <!-- 直接使用图标组件 -->
-          <Link class="dropdown-icon" />
-          <span>码云地址</span>
-        </el-dropdown-item>
-
-        <el-dropdown-item command="pro" class="dropdown-item">
-          <!-- 直接使用图标组件 -->
-          <Link class="dropdown-icon" />
-          <span>Admin Pro 地址</span>
-        </el-dropdown-item>
-
-        <el-dropdown-item command="plus" class="dropdown-item">
-          <!-- 直接使用图标组件 -->
-          <Link class="dropdown-icon" />
-          <span>Admin Plus 地址</span>
-        </el-dropdown-item>
-
-        <el-dropdown-item command="shop" class="dropdown-item">
-          <!-- 直接使用图标组件 -->
-          <Link class="dropdown-icon" />
-          <span>Shop Vite 地址</span>
-        </el-dropdown-item>
-
-        <el-dropdown-item command="job" class="dropdown-item">
-          <!-- 直接使用图标组件 -->
-          <Link class="dropdown-icon" />
-          <span>好工作就业参考网</span>
-        </el-dropdown-item>
-
-        <el-divider></el-divider>
 
         <el-dropdown-item command="logout" class="dropdown-item logout-item">
           <!-- 直接使用图标组件 -->
