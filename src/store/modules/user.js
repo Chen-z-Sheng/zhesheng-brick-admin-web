@@ -1,134 +1,137 @@
-// src/store/modules/user.js
-import { getUserInfo, login, logout /* 或者 getMe */ } from "@/api/user";
-import { getAccessToken, removeAccessToken, setAccessToken } from "@/utils/accessToken";
-import { resetRouter } from "@/router";
-import { title, tokenName } from "@/config";
-import { ElMessage } from "element-plus";
-import { jwtDecode } from "jwt-decode";
+import { getUserInfo, login, logout } from "@/api/user"
+import { getAccessToken, removeAccessToken, setAccessToken } from "@/utils/accessToken"
+import { resetRouter } from "@/router"
+import { title } from "@/config"
+import { ElMessage } from "element-plus"
+import { jwtDecode } from "jwt-decode"
 
-// 从 JWT 中解析 userId（优先 id，其次 sub）
 function deriveUserIdFromToken(token) {
   try {
-    if (!token) return "";
-    const p = jwtDecode(token);
-    return String(p.id ?? p.sub ?? "");
+    if (!token) return ""
+    const p = jwtDecode(token)
+    return String(p.id ?? p.sub ?? "")
   } catch {
-    return "";
+    return ""
   }
 }
 
 const state = () => {
-  const token = getAccessToken();
+  const token = getAccessToken()
   return {
     accessToken: token,
-    userId: deriveUserIdFromToken(token), // 启动时恢复 userId，避免拼接成 /user/
+    refreshToken: "",
+    tokenType: "Bearer",
+    userId: deriveUserIdFromToken(token),
     username: "",
     avatar: "",
     permissions: [],
-  };
-};
+    userLoaded: false,
+  }
+}
 
 const getters = {
-  accessToken: (s) => s.accessToken,
-  userId: (s) => s.userId,
-  username: (s) => s.username,
-  avatar: (s) => s.avatar,
-  permissions: (s) => s.permissions,
-};
+  accessToken: s => s.accessToken,
+  refreshToken: s => s.refreshToken,
+  tokenType: s => s.tokenType,
+  userId: s => s.userId,
+  username: s => s.username,
+  avatar: s => s.avatar,
+  permissions: s => s.permissions,
+  userLoaded: s => s.userLoaded,
+}
 
 const mutations = {
-  setAccessToken(s, t) {
-    s.accessToken = t;
-    setAccessToken(t);
-  },
-  setUserId(s, id) {
-    s.userId = id;
-  },
-  setUsername(s, v) { s.username = v; },
-  setAvatar(s, v) { s.avatar = v; },
-  setPermissions(s, v) { s.permissions = v; },
-};
+  setAccessToken(s, t) { s.accessToken = t; setAccessToken(t) },
+  setRefreshToken(s, t) { s.refreshToken = t || "" },
+  setTokenType(s, t) { s.tokenType = t || "Bearer" },
+  setUserId(s, id) { s.userId = id },
+  setUsername(s, v) { s.username = v },
+  setAvatar(s, v) { s.avatar = v },
+  setPermissions(s, v) { s.permissions = v || [] },
+  SET_USER_LOADED(s, v) { s.userLoaded = !!v },
+}
 
 const actions = {
-  setPermissions({ commit }, v) { commit("setPermissions", v); },
+  setPermissions({ commit }, v) { commit("setPermissions", v) },
 
   async login({ commit }, userInfo) {
-    const { data } = await login(userInfo);
-    const accessToken = data[tokenName] || data.accessToken;
+    const { data } = await login(userInfo)
+    const { accessToken, refreshToken, tokenType } = data || {}
     if (!accessToken) {
-      ElMessage.error(`登录接口异常，未正确返回 ${tokenName || "accessToken"}...`);
-      return;
+      ElMessage.error("登录接口异常：未返回 accessToken")
+      return
     }
-    commit("setAccessToken", accessToken);
+    commit("setAccessToken", accessToken)
+    commit("setRefreshToken", refreshToken || "")
+    commit("setTokenType", tokenType || "Bearer")
 
-    // 解析 userId
-    const id = deriveUserIdFromToken(accessToken);
+    const id = deriveUserIdFromToken(accessToken)
     if (!id) {
-      console.error("JWT 解析失败：未得到 userId");
-      ElMessage.error("登录令牌解析失败");
-      return;
+      ElMessage.error("登录令牌解析失败")
+      return
     }
-    commit("setUserId", id);
+    commit("setUserId", id)
 
-    const hour = new Date().getHours();
-    const thisTime = hour < 8 ? "早上好" : hour <= 11 ? "上午好" : hour <= 13 ? "中午好" : hour < 18 ? "下午好" : "晚上好";
-    ElMessage.success(`欢迎登录${title}，${thisTime}！`);
+    const hour = new Date().getHours()
+    const thisTime = hour < 8 ? "早上好" : hour <= 11 ? "上午好" : hour <= 13 ? "中午好" : hour < 18 ? "下午好" : "晚上好"
+    ElMessage.success(`欢迎登录${title}，${thisTime}！`)
   },
 
   async getUserInfo({ commit, state }) {
     try {
-      // 兜底：没有 userId 就再从 token 解一次；还没有就直接返回空权限避免死循环请求 /user/
       if (!state.userId) {
-        const id = deriveUserIdFromToken(state.accessToken);
-        if (id) commit("setUserId", id);
+        const id = deriveUserIdFromToken(state.accessToken)
+        if (id) commit("setUserId", id)
         else {
-          console.warn("[user/getUserInfo] userId 缺失，跳过请求");
-          return [];
+          console.warn("[user/getUserInfo] userId 缺失，跳过请求")
+          return []
         }
       }
 
-      // 如果你已经实现了 /server/admin/user/me，这里改成 const { data } = await getMe();
-      const { data } = await getUserInfo(state.userId);
+      const { data } = await getUserInfo(state.userId)
       if (!data) {
-        ElMessage.error("验证失败，请重新登录...");
-        return [];
+        ElMessage.error("验证失败，请重新登录")
+        return []
       }
 
-      // 字段映射
-      const mapRoleCode = (code) => (code === 0 ? "admin" : code === 1 ? "manager" : "user");
-      let permissions = [];
-      if (typeof data.roleCode === "number") permissions = [mapRoleCode(data.roleCode)];
-      else if (Array.isArray(data.permissions)) permissions = data.permissions;
+      const mapRoleCode = (code) => (code === 0 ? "admin" : code === 1 ? "manager" : "user")
+      let permissions = []
+      if (typeof data.roleCode === "number") permissions = [mapRoleCode(data.roleCode)]
+      else if (Array.isArray(data.permissions)) permissions = data.permissions
 
-      const username = data.username || "用户";
-      const avatar = data.headUrl || data.avatar || "";
+      const username = data.username || "用户"
+      const avatar = data.headUrl || data.avatar || ""
 
-      if (!permissions.length) permissions = ["user"]; // 兜底
+      if (!permissions.length) permissions = ["user"]
 
-      commit("setPermissions", permissions);
-      commit("setUsername", username);
-      commit("setAvatar", avatar);
-      return permissions;
+      commit("setPermissions", permissions)
+      commit("setUsername", username)
+      commit("setAvatar", avatar)
+      commit("SET_USER_LOADED", true)
+      return permissions
     } catch (error) {
-      console.error("获取用户信息失败:", error);
-      ElMessage.error("获取用户信息失败，请重新登录");
-      return [];
+      console.error("获取用户信息失败:", error)
+      ElMessage.error("获取用户信息失败，请重新登录")
+      return []
     }
   },
 
   async logout({ dispatch }) {
-    try { await logout(); } catch {}
-    await dispatch("resetAccessToken");
-    await resetRouter();
-    location.reload();
+    try { await logout() } catch {}
+    await dispatch("resetAccessToken")
+    await resetRouter()
+    location.reload()
   },
 
   resetAccessToken({ commit }) {
-    commit("setPermissions", []);
-    commit("setUserId", "");
-    commit("setAccessToken", "");
-    removeAccessToken();
+    commit("setPermissions", [])
+    commit("setUserId", "")
+    commit("setAccessToken", "")
+    commit("setRefreshToken", "")
+    commit("setTokenType", "Bearer")
+    commit("SET_USER_LOADED", false)
+    removeAccessToken()
   },
-};
+}
 
-export default { state, getters, mutations, actions };
+export default { state, getters, mutations, actions }

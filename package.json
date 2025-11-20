@@ -27,6 +27,8 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@form-create/designer": "3",
+    "@form-create/element-ui": "3",
     "ant-design-vue": "^4.2.6",
     "axios": "^1.13.2",
     "caniuse-lite": "^1.0.30001756",
@@ -55,6 +57,7 @@
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
     "@rspack/cli": "^1.6.4",
     "@rspack/core": "^1.6.4",
     "@rspack/dev-server": "^1.1.4",
@@ -72,6 +75,7 @@
     "sass": "1.94.1",
     "sass-loader": "16.0.6",
     "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.4",
     "vue-loader": "^17.4.2",
     "vue-template-compiler": "^2.7.16"
   },

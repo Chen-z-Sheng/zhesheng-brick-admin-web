@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios"
 import {
   baseURL,
   contentType,
@@ -8,193 +8,212 @@ import {
   noPermissionCode,
   requestTimeout,
   successCode,
-  tokenName,
-} from "@/config";
-import store from "@/store";
-import qs from "qs";
-import router from "@/router";
-import { isArray } from "@/utils/validate";
-import { ElLoading, ElMessage } from "element-plus";
-import { pickBy, identity } from "lodash-es";
+} from "@/config"
+import store from "@/store"
+import qs from "qs"
+import router from "@/router"
+import { isArray } from "@/utils/validate"
+import { ElLoading, ElMessage } from "element-plus"
+import { pickBy, identity } from "lodash-es"
 
-// 在生产环境下引入mock数据
+// 生产环境 mock（保持你的逻辑）
 if (process.env.NODE_ENV === "production") {
-  const mockContext = require.context("../../mock/controller", true, /\.js$/);
+  const mockContext = require.context("../../mock/controller", true, /\.js$/)
   mockContext.keys().forEach((key) => {
-    const mockModule = mockContext(key);
-    if (mockModule.default) {
-      mockModule.default;
-    } else {
-      mockModule;
-    }
-  });
+    const m = mockContext(key)
+    if (m.default) m.default
+  })
 }
 
-let loadingInstance;
+let loadingInstance
+let isRefreshing = false
+let pendingQueue = [] // 刷新期间挂起的请求
 
-/**
- * @description 处理code异常
- * @param {*} code
- * @param {*} msg
- */
-const handleCode = (code, msg) => {
-  switch (code) {
-    case invalidCode:
-      ElMessage.error(msg || `后端接口${code}异常`);
-      store.dispatch("user/resetAccessToken");
-      if (loginInterception) {
-        location.reload();
-      }
-      break;
-    case noPermissionCode:
-      router.push({ path: "/401" }).catch(() => { });
-      break;
-    default:
-      ElMessage.error(msg || `后端接口${code}异常`);
-      break;
-  }
-};
-
-// 请求重试配置
-const retryConfig = {
-  retry: 3, // 重试次数
-  retryDelay: 1000, // 重试间隔时间
-};
-
-// 创建axios实例
 const instance = axios.create({
   baseURL,
   timeout: requestTimeout,
-  headers: {
-    "Content-Type": contentType,
-  },
-});
+  headers: { "Content-Type": contentType },
+})
 
-// 请求重试方法
-instance.defaults.retry = retryConfig.retry;
-instance.defaults.retryDelay = retryConfig.retryDelay;
+instance.defaults.retry = 3
+instance.defaults.retryDelay = 1000
 
-// 请求拦截器
+const handleCode = (code, msg) => {
+  // 兼容 HTTP 401
+  if (code === 401) {
+    ElMessage.error(msg || "未授权或登录已过期")
+    store.dispatch("user/resetAccessToken")
+    if (loginInterception) location.reload()
+    return
+  }
+  switch (code) {
+    case invalidCode:
+      ElMessage.error(msg || `后端接口${code}异常`)
+      store.dispatch("user/resetAccessToken")
+      if (loginInterception) location.reload()
+      break
+    case noPermissionCode:
+      router.push({ path: "/401" }).catch(() => {})
+      break
+    default:
+      ElMessage.error(msg || `后端接口${code}异常`)
+      break
+  }
+}
+
 instance.interceptors.request.use(
   (config) => {
-    // ✅ 从 store 拿到 token，放到 Authorization 头里
-    const token = store.getters?.accessToken || store.state.user?.accessToken;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const accessToken = store.getters?.accessToken || store.state?.user?.accessToken
+    const tokenType   = store.getters?.tokenType   || store.state?.user?.tokenType || "Bearer"
+    if (accessToken) {
+      config.headers = config.headers || {}
+      config.headers.Authorization = `${tokenType} ${accessToken}` // Bearer <token>
     }
 
-    // （可选）如果你后端仅接受 JSON，这里保持默认 Content-Type 即可
-    // config.headers['Content-Type'] = 'application/json;charset=UTF-8'
-
-    // 这里会过滤所有为空、0、false 的 key（如果你需要保留 0/false，请删掉这一行）
-    if (config.data) config.data = pickBy(config.data, identity);
+    if (config.data) config.data = pickBy(config.data, identity)
 
     if (
       config.data &&
       config.headers["Content-Type"] ===
-      "application/x-www-form-urlencoded;charset=UTF-8"
+        "application/x-www-form-urlencoded;charset=UTF-8"
     ) {
-      config.data = qs.stringify(config.data);
+      config.data = qs.stringify(config.data)
     }
 
-    if (debounce.some((item) => config.url.includes(item))) {
-      loadingInstance = ElLoading.service();
+    if (debounce.some((item) => config.url?.includes(item))) {
+      loadingInstance = ElLoading.service()
     }
 
-    return config;
+    return config
   },
   (error) => Promise.reject(error)
-);
+)
 
-// 响应拦截器
+function maybeRetry(error, axiosInstance) {
+  const cfg = error.config || {}
+  const status = error?.response?.status
+  if (status && status < 500) return Promise.reject(error) // 4xx 不重试
+
+  cfg.retry = cfg.retry ?? instance.defaults.retry
+  cfg.retryDelay = cfg.retryDelay ?? instance.defaults.retryDelay
+  cfg.__retryCount = cfg.__retryCount || 0
+  if (cfg.__retryCount >= cfg.retry) return Promise.reject(error)
+
+  cfg.__retryCount += 1
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log(`重试请求: ${cfg.url}, 尝试次数: ${cfg.__retryCount}`)
+      resolve()
+    }, cfg.retryDelay)
+  }).then(() => axiosInstance(cfg))
+}
+
+// 挂起请求，等刷新完成后重放
+function queueRequest(config) {
+  return new Promise((resolve, reject) => {
+    pendingQueue.push({ resolve, reject, config })
+  })
+}
+function flushQueue(error, newAccessToken, tokenType = "Bearer") {
+  pendingQueue.forEach(({ resolve, reject, config }) => {
+    if (error) {
+      reject(error)
+    } else {
+      const replay = { ...config, headers: { ...(config.headers || {}) } }
+      replay.headers.Authorization = `${tokenType} ${newAccessToken}`
+      resolve(instance(replay))
+    }
+  })
+  pendingQueue = []
+}
+
+// 刷新 accessToken
+async function doRefreshToken() {
+  const refreshToken = store.getters?.refreshToken || store.state?.user?.refreshToken
+  if (!refreshToken) throw new Error("缺少 refreshToken")
+
+  // 后端接口：POST /auth/refresh，body: { refreshToken }
+  const resp = await instance.post("/auth/refresh", { refreshToken })
+  const { code, data, message } = resp || {}
+  if (code !== 0 || !data?.accessToken) throw new Error(message || "刷新失败")
+
+  const { accessToken, refreshToken: newRT, tokenType } = data
+  store.commit("user/setAccessToken", accessToken)
+  if (newRT) store.commit("user/setRefreshToken", newRT)
+  store.commit("user/setTokenType", tokenType || "Bearer")
+  return { accessToken, tokenType: tokenType || "Bearer" }
+}
+
 instance.interceptors.response.use(
   (response) => {
-    if (loadingInstance) loadingInstance.close();
-
-    const { data, config } = response;
-
-    if (data === undefined || data === null) {
-      ElMessage.error("后端接口返回数据为空");
-      return Promise.reject("后端接口返回数据为空");
+    if (loadingInstance) loadingInstance.close()
+    const { data, config } = response
+    if (data == null) {
+      ElMessage.error("后端接口返回数据为空")
+      return Promise.reject("后端接口返回数据为空")
     }
 
-    // ✅ 兼容 message/msg 两种字段
-    const code = data.code !== undefined ? data.code : null;
-    const msg =
-      data.message !== undefined
-        ? data.message
-        : data.msg !== undefined
-          ? data.msg
-          : "未知错误";
+    const code = data.code ?? null
+    const msg = data.message ?? data.msg ?? "未知错误"
+    const okArr = isArray(successCode) ? [...successCode] : [successCode]
 
-    // 操作正常 Code
-    const codeVerificationArray = isArray(successCode)
-      ? [...successCode]
-      : [successCode];
-
-    if (code !== null && codeVerificationArray.includes(code)) {
-      // 按你现有调用习惯，保留返回整个 data（包含 data.code/message/data）
-      return data;
+    if (code !== null && okArr.includes(code)) {
+      return data
     } else {
-      handleCode(code, msg);
+      handleCode(code, msg)
       return Promise.reject(
-        `vue-admin-better请求异常拦截:${JSON.stringify({
-          url: config.url,
-          code,
-          msg,
-        })}` || "Error"
-      );
+        `vue-admin-better请求异常拦截:${JSON.stringify({ url: config?.url, code, msg })}`
+      )
     }
   },
-  (error) => {
-    if (loadingInstance) loadingInstance.close();
+  async (error) => {
+    if (loadingInstance) loadingInstance.close()
 
-    // 重试逻辑保持不变…
-    const { config } = error;
-    if (config && config.retry) {
-      config.__retryCount = config.__retryCount || 0;
-      if (config.__retryCount < config.retry) {
-        config.__retryCount += 1;
-        const backoff = new Promise((resolve) => {
-          setTimeout(() => {
-            console.log(
-              `重试请求: ${config.url}, 尝试次数: ${config.__retryCount}`
-            );
-            resolve();
-          }, config.retryDelay || 1000);
-        });
-        return backoff.then(() => instance(config));
+    const { response, config } = error
+
+    // 无响应（网络/超时）
+    if (!response) return maybeRetry(error, instance)
+
+    const status = response.status
+    const serverMsg =
+      response.data?.message ?? response.data?.msg ?? error.message ?? "未知错误"
+
+    // === 401：刷新一次 ===
+    if (status === 401) {
+      const rt = store.getters?.refreshToken || store.state?.user?.refreshToken
+      if (!rt) {
+        handleCode(401, serverMsg)
+        return Promise.reject(error)
+      }
+
+      if (isRefreshing) {
+        return queueRequest(config)
+      }
+
+      isRefreshing = true
+      try {
+        const { accessToken, tokenType } = await doRefreshToken()
+        const replay = { ...config, headers: { ...(config.headers || {}) } }
+        replay.headers.Authorization = `${tokenType} ${accessToken}`
+
+        flushQueue(null, accessToken, tokenType)
+        return instance(replay)
+      } catch (e) {
+        flushQueue(e)
+        handleCode(401, "登录已过期，请重新登录")
+        return Promise.reject(e)
+      } finally {
+        isRefreshing = false
       }
     }
 
-    if (!error) {
-      ElMessage.error("发生未知错误");
-      return Promise.reject("发生未知错误");
+    // 其它 HTTP 错误
+    handleCode(status, serverMsg)
+    if (status >= 500 && status < 600) {
+      return maybeRetry(error, instance)
     }
-
-    const { response, message } = error;
-
-    if (response && response.data) {
-      // 这里是 HTTP 层错误（如 401/403/500）
-      const { status, data } = response;
-      const serverMsg =
-        data?.message ?? data?.msg ?? message ?? "未知错误"; // ✅ 也兼容 message/msg
-      handleCode(status, serverMsg);
-      return Promise.reject(error);
-    } else {
-      let errorMsg = "后端接口未知异常";
-      if (message) {
-        if (message === "Network Error") errorMsg = "后端接口连接异常";
-        else if (message.includes("timeout")) errorMsg = "后端接口请求超时";
-        else if (message.includes("Request failed with status code")) {
-          const code = message.slice(-3);
-          errorMsg = `后端接口${code}异常`;
-        }
-      }
-      ElMessage.error(errorMsg);
-      return Promise.reject(error);
-    }
+    return Promise.reject(error)
   }
-);
+)
 
-export default instance;
+export default instance
