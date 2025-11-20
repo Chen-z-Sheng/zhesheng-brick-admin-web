@@ -59,6 +59,9 @@ importers:
       screenfull:
         specifier: ^6.0.2
         version: 6.0.2
+      vform3-builds:
+        specifier: ^3.0.10
+        version: 3.0.10
       vue:
         specifier: ^3.5.24
         version: 3.5.24
@@ -2637,6 +2640,9 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+
+  vform3-builds@3.0.10:
+    resolution: {integrity: sha512-sULNk72Z6NG94X9MMgpBwinaIOYjtl7Bn5jZbV9iZaglSYr2SHm/wpXPAjl8F8OW6SzOOJgIpRek+NvOvN7wsg==}
 
   vue-demi@0.13.11:
     resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}
@@ -5508,6 +5514,8 @@ snapshots:
   uuid@8.3.2: {}
 
   vary@1.1.2: {}
+
+  vform3-builds@3.0.10: {}
 
   vue-demi@0.13.11(@vue/composition-api@1.7.2(vue@3.5.24))(vue@3.5.24):
     dependencies:
