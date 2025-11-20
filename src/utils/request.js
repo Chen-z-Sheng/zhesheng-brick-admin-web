@@ -34,7 +34,6 @@ if (process.env.NODE_ENV === "production") {
 let loadingInstance;
 
 /**
- * @author https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git （不想保留author可删除）
  * @description 处理code异常
  * @param {*} code
  * @param {*} msg

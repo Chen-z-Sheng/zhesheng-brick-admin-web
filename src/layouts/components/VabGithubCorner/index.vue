@@ -1,13 +1,11 @@
 <template>
   <a
     aria-label="View source on Github"
-    class="github-corner"
     href="https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git"
     target="_blank"
   >
     <svg
       aria-hidden="true"
-      class="github-color"
       height="80"
       viewBox="0 0 250 250"
       width="80"
@@ -48,11 +46,6 @@
       .octo-arm {
         animation: octocat-wave 560ms ease-in-out infinite;
       }
-    }
-
-    .github-color {
-      color: #fff;
-      fill: $base-color-blue;
     }
   }
 

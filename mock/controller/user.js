@@ -6,7 +6,7 @@ const accessTokens = {
 
 module.exports = [
   {
-    url: "/login",
+    url: "auth/login",
     type: "post",
     response(config) {
       const { username } = config.body;
