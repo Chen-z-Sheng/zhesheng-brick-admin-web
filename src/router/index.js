@@ -31,6 +31,23 @@ export const constantRoutes = [
     component: () => import("@/views/404.vue"),
     hidden: true,
   },
+  {
+    path: '/form',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 'FormDesigner',
+        component: () => import('@/views/form/index.vue'),
+        meta: {
+          title: '表单设计',          // 需要在菜单里显示就留着
+          permissions: ['admin'],     // 你项目里菜单权限用的字段，保持一致
+          hidden: true,               // 不想出现在侧边栏就加 hidden: true
+          activeMenu: '/vab/form'     // 从列表页点进来时，让侧栏仍高亮“组件/表单”
+        }
+      }
+    ]
+  }
 ];
 
 export const asyncRoutes = [
