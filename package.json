@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
-    "@form-create/designer": "3",
-    "@form-create/element-ui": "3",
+    "@form-create/designer": "^3",
+    "@form-create/element-ui": "^3",
     "ant-design-vue": "^4.2.6",
     "axios": "^1.13.2",
     "caniuse-lite": "^1.0.30001756",

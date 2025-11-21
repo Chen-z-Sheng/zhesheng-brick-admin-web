@@ -11,7 +11,6 @@ import { mockXHR } from "@/utils/static";
 
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
-
 // ✅ 只用 Designer，自带 formCreate，避免版本不一致
 import FcDesigner from "@form-create/designer";
 
