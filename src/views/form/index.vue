@@ -18,14 +18,12 @@
       <el-button @click="preview">预览</el-button>
     </div>
 
-    <!-- 设计器视口 -->
-    <div class="viewport">
-      <div class="scale" :style="scaleStyle">
-        <fc-designer ref="designerRef" class="root" />
-      </div>
+    <!-- 设计器区域：不再缩放，不再内滚动，自然铺开 -->
+    <div class="designer-wrap">
+      <fc-designer ref="designerRef" class="designer-root" />
     </div>
 
-    <!-- 预览弹窗（需要已注册 form-create 渲染器） -->
+    <!-- 预览弹窗 -->
     <el-dialog v-model="previewing" width="70%" title="表单预览" destroy-on-close>
       <div v-if="!hasFormCreate" class="preview-missing">
         未检测到 form-create 渲染器。请在 main.js 注册后再试：
@@ -53,7 +51,6 @@ import { getTemplateDetail, createTemplate, updateTemplate } from "@/api/formTem
 const route = useRoute();
 const router = useRouter();
 
-/** 路由参数：/form?mode=new 或 /form?id=xxx[&preview=true] */
 const id = ref(route.query.id ? String(route.query.id) : null);
 const isNew = computed(() => route.query.mode === "new" || !id.value);
 
@@ -61,14 +58,7 @@ const designerRef = ref(null);
 const meta = ref({ name: "", teamName: "", description: "" });
 const saving = ref(false);
 
-/** 设计器缩放，不改布局逻辑，简单稳定 */
-const scale = ref(0.9);
-const scaleStyle = computed(() => ({
-  transform: `scale(${scale.value})`,
-  transformOrigin: "top center",
-}));
-
-/** 预览相关（仅在已注册 form-create 时可用） */
+// 预览相关
 const previewing = ref(false);
 const formData = ref({});
 const previewRule = ref([]);
@@ -79,7 +69,6 @@ const hasFormCreate = !!(
 );
 
 onMounted(async () => {
-  // 编辑态：拉详情并填入设计器
   if (!isNew.value && id.value) {
     try {
       const detail = await getTemplateDetail(id.value);
@@ -95,14 +84,9 @@ onMounted(async () => {
       ElMessage.error("加载模板失败：" + (e?.message || "接口异常"));
     }
   }
-
-  // URL 带 preview=true 时，初始化后立即预览
-  if (route.query.preview === "true") {
-    preview();
-  }
+  if (route.query.preview === "true") preview();
 });
 
-/** 保存（新建/编辑复用） */
 async function save() {
   const rule = designerRef.value?.getRule?.() || [];
   const option = designerRef.value?.getOption?.() || [];
@@ -115,21 +99,12 @@ async function save() {
   saving.value = true;
   try {
     if (isNew.value) {
-      await createTemplate({
-        name: meta.value.name,
-        teamName: meta.value.teamName,
-        description: meta.value.description,
-        rule_json: rule,
-        option_json: option,
-      });
+      await createTemplate({ ...meta.value, rule_json: rule, option_json: option });
       ElMessage.success("模板创建成功");
-      // 返回列表或停留本页均可，这里选择返回列表
       router.back();
     } else {
       await updateTemplate(id.value, {
-        name: meta.value.name,
-        teamName: meta.value.teamName,
-        description: meta.value.description,
+        ...meta.value,
         rule_json: rule,
         option_json: option,
       });
@@ -142,7 +117,6 @@ async function save() {
   }
 }
 
-/** 预览（无渲染器时给出提示） */
 function preview() {
   if (!hasFormCreate) {
     ElMessage.warning("未注册 form-create 渲染器，无法预览");
@@ -160,36 +134,22 @@ function goBack() {
 </script>
 
 <style scoped lang="scss">
+/* 页面整体用自然流布局，滚动交给页面本身 */
 .designer-page {
   display: flex;
   flex-direction: column;
+  gap: 12px;
   padding: 12px;
-  height: 100%;
 }
+
+/* 顶部工具栏 */
 .topbar {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
 }
-.viewport {
-  height: calc(100vh - 120px);
-  min-height: 480px;
-  overflow: auto;
-  display: grid;
-  place-content: start center;
-  background: #fff;
-  border: 1px solid #ebeef5;
-  border-radius: 8px;
-}
-.scale {
-  width: 100%;
-  height: 100%;
-}
-.root {
-  width: 100%;
-  min-height: 560px;
-  display: block;
+.grow {
+  flex: 1;
 }
 .w-56 {
   width: 260px;
@@ -200,8 +160,28 @@ function goBack() {
 .w-72 {
   width: 320px;
 }
-.grow {
-  flex: 1;
+
+/* 设计器外框：留白 + 边框，自动撑高 */
+.designer-wrap {
+  background: #fff;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* 设计器铺满父容器；不给固定高度，最小高度兜底 */
+.designer-root {
+  width: 100%;
+  height: auto;
+  min-height: 700px; /* 你也可以改成 80vh 看喜好 */
+  display: block;
+}
+
+/* 兜底：不同版本内部容器名不同，统一拉满 */
+:deep(.fc-designer),
+:deep(.fc-container),
+:deep(.form-create) {
+  min-height: 700px;
 }
 .preview-missing {
   font-size: 13px;

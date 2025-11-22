@@ -35,7 +35,7 @@ module.exports = [
     },
   },
   {
-    url: "/userInfo",
+    url: "/usersInfo",
     type: "post",
     response(config) {
       const { accessToken } = config.body;
