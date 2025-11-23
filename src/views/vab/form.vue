@@ -39,57 +39,52 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { getTemplates, deleteTemplate } from "@/api/formTemplate"; // 确保API文件存在
+import { getForms, deleteForm } from "@/api/form";
 
 const router = useRouter();
 const q = ref("");
-const list = ref([]);
+const list = ref([]); // 渲染用数组
 
-// 加载模板列表（带错误处理，避免接口失败卡死）
+// 加载模板列表
 async function load() {
   try {
-    list.value = await getTemplates(); // 调用获取模板列表接口
+    const resp = await getForms(); // resp = { list, pagination }
+    console.log("getForms =>", resp);
+    list.value = Array.isArray(resp?.list) ? resp.list : [];
   } catch (err) {
     ElMessage.error("加载模板失败：" + (err.message || "服务器异常"));
-    list.value = []; // 出错时清空列表，避免渲染混乱
+    list.value = [];
   }
 }
-
-// 页面挂载时加载列表
 onMounted(load);
 
-// 搜索过滤逻辑（不区分大小写）
+// 客户端过滤（不区分大小写）
 const filtered = computed(() => {
   const keyword = q.value.trim().toLowerCase();
   if (!keyword) return list.value;
   return list.value.filter((item) =>
     [item.name, item.teamName, item.description].some((field) =>
-      field?.toLowerCase().includes(keyword)
+      String(field ?? "")
+        .toLowerCase()
+        .includes(keyword)
     )
   );
 });
 
-// 跳转到新建模板页（路由路径需与你的路由配置一致）
 function goCreate() {
-  router.push({ path: '/form', query: { mode: 'new' } })
+  router.push({ path: "/form", query: { mode: "new" } });
 }
-
-// 跳转到编辑模板页（携带模板ID动态传参）
-function goEdit(templateId) {
-  router.push({ path: '/form', query: { id: String(templateId) } })
+function goEdit(id) {
+  router.push({ path: "/form", query: { id: String(id) } });
 }
-
-// 跳转到预览模板页
-function goPreview(templateId) {
-  router.push({ path: '/form', query: { id: String(templateId), preview: 'true' } })
+function goPreview(id) {
+  router.push({ path: "/form", query: { id: String(id), preview: "true" } });
 }
-
-// 删除模板（调用接口+刷新列表）
-async function doRemove(templateId) {
+async function doRemove(id) {
   try {
-    await deleteTemplate(templateId); // 调用删除模板接口
+    await deleteForm(id);
     ElMessage.success("删除成功！");
-    load(); // 删除后重新加载列表，实时更新视图
+    load();
   } catch (err) {
     ElMessage.error("删除失败：" + (err.message || "操作异常"));
   }
@@ -97,41 +92,34 @@ async function doRemove(templateId) {
 </script>
 
 <style scoped>
-/* 布局样式：确保页面美观且响应式 */
 .template-list {
   padding: 20px;
   background-color: #fff;
   min-height: calc(100vh - 120px);
 }
-
 .toolbar {
   display: flex;
   align-items: center;
   margin-bottom: 24px;
   gap: 16px;
 }
-
 .grow {
-  flex: 1; /* 自动填充剩余空间，实现按钮右对齐 */
+  flex: 1;
 }
-
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* 响应式卡片布局 */
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
 }
-
 .card {
   height: 100%;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
 }
-
 .card:hover {
-  transform: translateY(-4px); /* hover轻微上浮，提升交互体验 */
+  transform: translateY(-4px);
 }
-
 .card-hd {
   display: flex;
   justify-content: space-between;
@@ -139,13 +127,11 @@ async function doRemove(templateId) {
   flex-wrap: wrap;
   gap: 8px;
 }
-
 .name {
   font-size: 16px;
   font-weight: 600;
-  color: #1989fa; /* 主色调，与Element Plus一致 */
+  color: #1989fa;
 }
-
 .team {
   font-size: 12px;
   color: #666;
@@ -153,15 +139,13 @@ async function doRemove(templateId) {
   padding: 2px 10px;
   border-radius: 16px;
 }
-
 .desc {
   margin: 16px 0;
   color: #666;
-  flex: 1; /* 让描述区占满中间空间，按钮区靠底 */
+  flex: 1;
   line-height: 1.6;
   font-size: 14px;
 }
-
 .ops {
   display: flex;
   justify-content: flex-end;

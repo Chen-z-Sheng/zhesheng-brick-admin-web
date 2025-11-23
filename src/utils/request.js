@@ -53,7 +53,7 @@ const handleCode = (code, msg) => {
       if (loginInterception) location.reload()
       break
     case noPermissionCode:
-      router.push({ path: "/401" }).catch(() => {})
+      router.push({ path: "/401" }).catch(() => { })
       break
     default:
       ElMessage.error(msg || `后端接口${code}异常`)
@@ -64,7 +64,7 @@ const handleCode = (code, msg) => {
 instance.interceptors.request.use(
   (config) => {
     const accessToken = store.getters?.accessToken || store.state?.user?.accessToken
-    const tokenType   = store.getters?.tokenType   || store.state?.user?.tokenType || "Bearer"
+    const tokenType = store.getters?.tokenType || store.state?.user?.tokenType || "Bearer"
     if (accessToken) {
       config.headers = config.headers || {}
       config.headers.Authorization = `${tokenType} ${accessToken}` // Bearer <token>
@@ -75,7 +75,7 @@ instance.interceptors.request.use(
     if (
       config.data &&
       config.headers["Content-Type"] ===
-        "application/x-www-form-urlencoded;charset=UTF-8"
+      "application/x-www-form-urlencoded;charset=UTF-8"
     ) {
       config.data = qs.stringify(config.data)
     }
@@ -168,6 +168,10 @@ instance.interceptors.response.use(
   },
   async (error) => {
     if (loadingInstance) loadingInstance.close()
+
+    if (response?.status === 204) {
+      return { code: 0, data: null, message: 'No Content' };
+    }
 
     const { response, config } = error
 

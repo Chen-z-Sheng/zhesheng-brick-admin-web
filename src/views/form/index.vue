@@ -46,7 +46,7 @@ app.use(formCreate)</pre
 import { ref, computed, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { getTemplateDetail, createTemplate, updateTemplate } from "@/api/formTemplate";
+import { getForm, createForm, updateForm } from "@/api/form";
 
 const route = useRoute();
 const router = useRouter();
@@ -71,15 +71,15 @@ const hasFormCreate = !!(
 onMounted(async () => {
   if (!isNew.value && id.value) {
     try {
-      const detail = await getTemplateDetail(id.value);
+      const detail = await getForm(id.value);
       meta.value = {
         name: detail.name || "",
         teamName: detail.teamName || "",
         description: detail.description || "",
       };
       await nextTick();
-      designerRef.value?.setRule?.(detail.rule_json || []);
-      designerRef.value?.setOption?.(detail.option_json || {});
+      designerRef.value?.setRule?.(detail.ruleJson || []);
+      designerRef.value?.setOption?.(detail.optionJson || {});
     } catch (e) {
       ElMessage.error("加载模板失败：" + (e?.message || "接口异常"));
     }
@@ -89,7 +89,7 @@ onMounted(async () => {
 
 async function save() {
   const rule = designerRef.value?.getRule?.() || [];
-  const option = designerRef.value?.getOption?.() || [];
+  const option = designerRef.value?.getOption?.() || {};
 
   if (!meta.value.name || !meta.value.teamName) {
     ElMessage.warning("请填写模板名称和团队名称");
@@ -99,15 +99,11 @@ async function save() {
   saving.value = true;
   try {
     if (isNew.value) {
-      await createTemplate({ ...meta.value, rule_json: rule, option_json: option });
+      await createForm({ ...meta.value, ruleJson: rule, optionJson: option });
       ElMessage.success("模板创建成功");
       router.back();
     } else {
-      await updateTemplate(id.value, {
-        ...meta.value,
-        rule_json: rule,
-        option_json: option,
-      });
+      await updateForm(id.value, { ...meta.value, ruleJson: rule, optionJson: option });
       ElMessage.success("模板更新成功");
     }
   } catch (e) {
