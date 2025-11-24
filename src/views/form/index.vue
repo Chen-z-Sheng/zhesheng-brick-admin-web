@@ -1,6 +1,5 @@
 <template>
   <div class="designer-page">
-    <!-- 顶部工具栏 -->
     <div class="topbar">
       <el-page-header @back="goBack">
         <template #content>
@@ -10,27 +9,50 @@
 
       <div class="grow" />
 
-      <el-input v-model="meta.name" placeholder="模板名称" class="w-56" />
-      <el-input v-model="meta.teamName" placeholder="团队名称" class="w-40" />
-      <el-input v-model="meta.description" placeholder="模板描述" class="w-72" />
+      <el-input
+        v-model="meta.name"
+        placeholder="模板名称"
+        class="w-56"
+      />
+      <el-input
+        v-model="meta.teamName"
+        placeholder="团队名称"
+        class="w-40"
+      />
+      <el-input
+        v-model="meta.description"
+        placeholder="模板描述"
+        class="w-72"
+      />
 
-      <el-button :loading="saving" type="primary" @click="save">保存</el-button>
+      <el-button
+        :loading="saving"
+        type="primary"
+        @click="save"
+      >保存</el-button>
       <el-button @click="preview">预览</el-button>
     </div>
 
-    <!-- 设计器区域：不再缩放，不再内滚动，自然铺开 -->
     <div class="designer-wrap">
-      <fc-designer ref="designerRef" class="designer-root" />
+      <fc-designer
+        ref="designerRef"
+        class="designer-root"
+      />
     </div>
 
-    <!-- 预览弹窗 -->
-    <el-dialog v-model="previewing" width="70%" title="表单预览" destroy-on-close>
-      <div v-if="!hasFormCreate" class="preview-missing">
-        未检测到 form-create 渲染器。请在 main.js 注册后再试：
-        <pre>
-import formCreate from '@form-create/element-ui'
-app.use(formCreate)</pre
-        >
+    <el-dialog
+      v-model="previewing"
+      width="70%"
+      title="表单预览"
+      destroy-on-close
+    >
+      <div
+        v-if="!hasFormCreate"
+        class="preview-missing"
+      >
+        未检测到 form-create 渲染器。请确认 main.js 已：
+        <pre>import formCreate from '@form-create/element-ui'
+app.use(formCreate)</pre>
       </div>
       <form-create
         v-else
@@ -58,38 +80,78 @@ const designerRef = ref(null);
 const meta = ref({ name: "", teamName: "", description: "" });
 const saving = ref(false);
 
-// 预览相关
+// 预览相关（全部纯 JS）
 const previewing = ref(false);
 const formData = ref({});
 const previewRule = ref([]);
 const previewOption = ref({});
+
+// 检测是否已注册 form-create
 const hasFormCreate = !!(
   typeof window !== "undefined" &&
   (window.formCreate || window.$formCreate)
 );
+
+// 清洗规则：去掉纯空白 html 节点与空容器
+function cleanRule (nodes) {
+  if (!Array.isArray(nodes)) return [];
+  const CONTAINER_TYPES = new Set(["row", "col", "group", "tab", "tabs", "card", "grid"]);
+  const getHtml = (n) =>
+    (n && n.props ? (n.props.innerHTML ?? n.props.html ?? n.children ?? "") : (n && n.children) || "");
+  const isEmptyHtml = (n) =>
+    n && n.type === "html" && typeof getHtml(n) === "string" && /^\s*$/.test(getHtml(n));
+
+  function deep (arr) {
+    return (arr || [])
+      .filter((n) => n && !isEmptyHtml(n))
+      .map((n) => {
+        const copy = { ...n };
+        if (Array.isArray(copy.children)) copy.children = deep(copy.children).filter(Boolean);
+        if (copy && copy.props && Array.isArray(copy.props.children)) {
+          copy.props = { ...copy.props, children: deep(copy.props.children).filter(Boolean) };
+        }
+        if (copy && copy.options && Array.isArray(copy.options.children)) {
+          copy.options = { ...copy.options, children: deep(copy.options.children).filter(Boolean) };
+        }
+        return copy;
+      })
+      .filter((n) => {
+        const hasKids =
+          (Array.isArray(n.children) && n.children.length > 0) ||
+          (n && n.props && Array.isArray(n.props.children) && n.props.children.length > 0) ||
+          (n && n.options && Array.isArray(n.options.children) && n.options.children.length > 0);
+        return !CONTAINER_TYPES.has(n.type) || hasKids;
+      });
+  }
+  return deep(nodes);
+}
 
 onMounted(async () => {
   if (!isNew.value && id.value) {
     try {
       const detail = await getForm(id.value);
       meta.value = {
-        name: detail.name || "",
-        teamName: detail.teamName || "",
-        description: detail.description || "",
+        name: (detail && detail.name) || "",
+        teamName: (detail && detail.teamName) || "",
+        description: (detail && detail.description) || "",
       };
       await nextTick();
-      designerRef.value?.setRule?.(detail.ruleJson || []);
-      designerRef.value?.setOption?.(detail.optionJson || {});
+      const safeRule = cleanRule((detail && detail.ruleJson) || []);
+      const safeOpt = (detail && detail.optionJson) || {};
+      if (designerRef.value && designerRef.value.setRule) designerRef.value.setRule(safeRule);
+      if (designerRef.value && designerRef.value.setOption) designerRef.value.setOption(safeOpt);
     } catch (e) {
-      ElMessage.error("加载模板失败：" + (e?.message || "接口异常"));
+      ElMessage.error("加载模板失败：" + (e && e.message ? e.message : "接口异常"));
     }
   }
   if (route.query.preview === "true") preview();
 });
 
-async function save() {
-  const rule = designerRef.value?.getRule?.() || [];
-  const option = designerRef.value?.getOption?.() || {};
+async function save () {
+  const rawRule = (designerRef.value && designerRef.value.getRule) ? designerRef.value.getRule() : [];
+  const rawOption = (designerRef.value && designerRef.value.getOption) ? designerRef.value.getOption() : {};
+  const rule = cleanRule(rawRule);
+  const option = rawOption;
 
   if (!meta.value.name || !meta.value.teamName) {
     ElMessage.warning("请填写模板名称和团队名称");
@@ -107,38 +169,36 @@ async function save() {
       ElMessage.success("模板更新成功");
     }
   } catch (e) {
-    ElMessage.error("保存失败：" + (e?.message || "接口异常"));
+    ElMessage.error("保存失败：" + (e && e.message ? e.message : "接口异常"));
   } finally {
     saving.value = false;
   }
 }
 
-function preview() {
+function preview () {
   if (!hasFormCreate) {
     ElMessage.warning("未注册 form-create 渲染器，无法预览");
     previewing.value = true;
     return;
   }
-  previewRule.value = designerRef.value?.getRule?.() || [];
-  previewOption.value = designerRef.value?.getOption?.() || {};
+  const rawRule = (designerRef.value && designerRef.value.getRule) ? designerRef.value.getRule() : [];
+  previewRule.value = cleanRule(rawRule);
+  previewOption.value = (designerRef.value && designerRef.value.getOption) ? designerRef.value.getOption() : {};
   previewing.value = true;
 }
 
-function goBack() {
+function goBack () {
   router.back();
 }
 </script>
 
 <style scoped lang="scss">
-/* 页面整体用自然流布局，滚动交给页面本身 */
 .designer-page {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 12px;
 }
-
-/* 顶部工具栏 */
 .topbar {
   display: flex;
   align-items: center;
@@ -157,35 +217,60 @@ function goBack() {
   width: 320px;
 }
 
-/* 设计器外框：留白 + 边框，自动撑高 */
 .designer-wrap {
   background: #fff;
   border: 1px solid #ebeef5;
   border-radius: 8px;
   padding: 12px;
+  height: calc(100vh - 120px); /* 顶部工具栏大约 60~80px，自行微调 */
+  box-sizing: border-box;
 }
-
-/* 设计器铺满父容器；不给固定高度，最小高度兜底 */
 .designer-root {
   width: 100%;
-  height: auto;
-  min-height: 700px; /* 你也可以改成 80vh 看喜好 */
+  height: 100%; /* 关键：改成 100% 高度 */
   display: block;
 }
 
-/* 兜底：不同版本内部容器名不同，统一拉满 */
+/* ② 取消我们之前的“兜底 min-height”，避免把右侧面板也一起拉高 */
 :deep(.fc-designer),
 :deep(.fc-container),
 :deep(.form-create) {
-  min-height: 700px;
+  min-height: 0; /* 原来是 700px，这里显式归零 */
 }
-.preview-missing {
-  font-size: 13px;
-  color: #666;
-  background: #f9fafb;
-  border: 1px dashed #e5e7eb;
-  border-radius: 8px;
-  padding: 12px;
-  white-space: pre-wrap;
+
+/* ③ 右侧配置面板：去掉 el-collapse 默认的大内边距/底部空白 */
+:deep(.fc-designer .fc-right) {
+  overflow: auto; /* 只在右侧滚动，避免整页拉长 */
+  /* 可选：把 Collapse 的全局变量调小（Element Plus 2.x 支持） */
+  --el-collapse-content-spacing: 0px;
+}
+:deep(.fc-designer .fc-right .el-collapse-item__wrap),
+:deep(.fc-designer .fc-right .el-collapse-item__content) {
+  padding-bottom: 0 !important;
+}
+
+/* ④ el-form 间距收紧（已经写过，这里加强“最后一项无间距”） */
+:deep(.fc-designer .fc-right .el-form .el-form-item) {
+  margin-bottom: 8px;
+}
+:deep(.fc-designer .fc-right .el-form .el-form-item:last-child) {
+  margin-bottom: 0;
+}
+/* 某些面板用 row/gutter 叠加了额外空隙 */
+:deep(.fc-designer .fc-right .el-row) {
+  margin-bottom: 0;
+}
+:deep(.fc-designer .fc-right .el-divider) {
+  margin: 8px 0;
+}
+
+/* ⑤ 解决 el-scrollbar 把内容“强行拉满”的问题 */
+:deep(.fc-designer .fc-right .el-scrollbar__view) {
+  min-height: auto !important; /* Element Plus 默认是 100% */
+}
+
+/* ⑥ 防止某些“隐藏块”占位（个别版本用 visibility 隐藏） */
+:deep(.fc-designer .fc-right [style*="visibility: hidden"]) {
+  display: none !important;
 }
 </style>

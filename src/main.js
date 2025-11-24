@@ -1,3 +1,4 @@
+// src/main.js
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
@@ -11,7 +12,9 @@ import { mockXHR } from "@/utils/static";
 
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
-// ✅ 只用 Designer，自带 formCreate，避免版本不一致
+
+// ✅ 用这个：element-ui(v3)，不是 element-plus
+import formCreate from "@form-create/element-ui";
 import FcDesigner from "@form-create/designer";
 
 const app = createApp(App);
@@ -32,9 +35,10 @@ if (process.env.NODE_ENV === "production") {
 }
 printLayoutsInfo();
 
-// 顺序：ElementPlus -> Designer -> Designer.formCreate
 app.use(ElementPlus);
+
+// ⚠️ 一定先挂渲染器，再挂设计器
+app.use(formCreate);
 app.use(FcDesigner);
-app.use(FcDesigner.formCreate);
 
 app.mount("#vue-admin-better");
