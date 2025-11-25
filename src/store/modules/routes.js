@@ -1,5 +1,4 @@
 /**
- * @author https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git （不想保留author可删除）
  * @description 路由拦截状态管理，目前两种模式：all模式与intelligence模式
  */
 import { asyncRoutes, constantRoutes } from '@/router'
@@ -15,34 +14,33 @@ const getters = {
   partialRoutes: (state) => state.partialRoutes,
 }
 const mutations = {
-  setRoutes(state, routes) {
+  setRoutes (state, routes) {
     state.routes = constantRoutes.concat(routes)
   },
-  setAllRoutes(state, routes) {
+  setAllRoutes (state, routes) {
     state.routes = constantRoutes.concat(routes)
   },
 }
 const actions = {
   /**
-   * @author https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git （不想保留author可删除）
    * @description intelligence模式设置路由
    * @param {*} { commit }
    * @param {*} permissions
    * @returns
    */
-  async setRoutes({ commit }, permissions) {
-    //根据permissions做路由筛选
-    let accessedRoutes = filterAsyncRoutes(asyncRoutes, permissions)
+  async setRoutes ({ commit }, permissions) {
+    // 根据permissions做路由筛选
+    // let accessedRoutes = filterAsyncRoutes(asyncRoutes, permissions)
+    let accessedRoutes = asyncRoutes
     commit('setRoutes', accessedRoutes)
     return accessedRoutes
   },
   /**
-   * @author https://github.com/Chen-z-Sheng/zhesheng-brick-admin-web.git （不想保留author可删除）
    * @description all模式设置路由
    * @param {*} { commit }
    * @returns
    */
-  async setAllRoutes({ commit }) {
+  async setAllRoutes ({ commit }) {
     try {
       let { data } = await getRouterList()
       if (!data || !Array.isArray(data)) {

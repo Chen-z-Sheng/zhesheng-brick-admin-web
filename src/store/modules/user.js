@@ -100,7 +100,7 @@ const actions = {
       else if (Array.isArray(data.permissions)) permissions = data.permissions
 
       const username = data.username || "用户"
-      const avatar = data.headUrl || data.avatar || ""
+      const avatar = data.avatarUrl
 
       if (!permissions.length) permissions = ["user"]
 
