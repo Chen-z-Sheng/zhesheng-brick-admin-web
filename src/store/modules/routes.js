@@ -30,8 +30,8 @@ const actions = {
    */
   async setRoutes ({ commit }, permissions) {
     // 根据permissions做路由筛选
-    // let accessedRoutes = filterAsyncRoutes(asyncRoutes, permissions)
-    let accessedRoutes = asyncRoutes
+    let accessedRoutes = filterAsyncRoutes(asyncRoutes, permissions)
+    // let accessedRoutes = asyncRoutes
     commit('setRoutes', accessedRoutes)
     return accessedRoutes
   },

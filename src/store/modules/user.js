@@ -100,7 +100,7 @@ const actions = {
       else if (Array.isArray(data.permissions)) permissions = data.permissions
 
       const username = data.username || "用户"
-      const avatar = data.avatarUrl
+      const avatar = data.avatarUrl || data.avatar || ""
 
       if (!permissions.length) permissions = ["user"]
 
@@ -117,7 +117,7 @@ const actions = {
   },
 
   async logout({ dispatch }) {
-    try { await logout() } catch {}
+    try { await logout() } catch { }
     await dispatch("resetAccessToken")
     await resetRouter()
     location.reload()
