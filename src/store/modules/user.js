@@ -79,42 +79,68 @@ const actions = {
 
   async getUserInfo({ commit, state }) {
     try {
+      // 1. 确保有 userId，没有就从 token 里解出来
       if (!state.userId) {
         const id = deriveUserIdFromToken(state.accessToken)
-        if (id) commit("setUserId", id)
-        else {
+        if (id) {
+          commit("setUserId", id)
+        } else {
           console.warn("[user/getUserInfo] userId 缺失，跳过请求")
-          return []
+          return null // 用 null 表示失败，避免跟 [] 搞混
         }
       }
 
+      // 2. 调用接口拿用户信息
       const { data } = await getUserInfo(state.userId)
+      console.log("[DEBUG] getUserInfo raw data =", data)
+
       if (!data) {
         ElMessage.error("验证失败，请重新登录")
-        return []
+        return null
       }
 
-      const mapRoleCode = (code) => (code === 0 ? "admin" : code === 1 ? "manager" : "user")
+      // 3. 计算权限：优先用 data.permissions
       let permissions = []
-      if (typeof data.roleCode === "number") permissions = [mapRoleCode(data.roleCode)]
-      else if (Array.isArray(data.permissions)) permissions = data.permissions
+
+      if (Array.isArray(data.permissions) && data.permissions.length > 0) {
+        // ⚠️ 注意是 data.permissions，有 s
+        permissions = data.permissions.slice() // 拷贝一份，避免后面意外修改
+      } else if (typeof data.roleCode === "string" && data.roleCode) {
+        // 如果后端没给权限数组，就退化成用角色名
+        permissions = [data.roleCode]
+      }
+
+      // 4. 可选：把角色也当成一种权限码塞进去，兼容老的 ["admin"] 写法
+      if (typeof data.roleCode === "string" && data.roleCode) {
+        if (!permissions.includes(data.roleCode)) {
+          permissions.push(data.roleCode) // 比如 "admin"
+        }
+      }
+
+      // 5. 再兜底一次，真的啥都没有就给一个 'user'
+      if (!permissions.length) {
+        permissions = ["user"]
+      }
 
       const username = data.username || "用户"
       const avatar = data.avatarUrl || data.avatar || ""
 
-      if (!permissions.length) permissions = ["user"]
+      console.log("[DEBUG] computed permissions =", permissions)
 
       commit("setPermissions", permissions)
       commit("setUsername", username)
       commit("setAvatar", avatar)
       commit("SET_USER_LOADED", true)
+
+      // 非常重要：返回的是权限数组，路由守卫要用
       return permissions
     } catch (error) {
       console.error("获取用户信息失败:", error)
       ElMessage.error("获取用户信息失败，请重新登录")
-      return []
+      return null
     }
-  },
+  }
+  ,
 
   async logout({ dispatch }) {
     try { await logout() } catch { }

@@ -126,7 +126,7 @@ export const asyncRoutes = [
         component: () => import("@/views/vab/form.vue"),
         meta: {
           title: "表单",
-          permissions: ["admin"],
+          permissions: ["form:list"],
         },
       },
       // {

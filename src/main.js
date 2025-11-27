@@ -13,7 +13,6 @@ import { mockXHR } from "@/utils/static";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 
-// ✅ 用这个：element-ui(v3)，不是 element-plus
 import formCreate from "@form-create/element-ui";
 import FcDesigner from "@form-create/designer";
 
@@ -37,7 +36,6 @@ printLayoutsInfo();
 
 app.use(ElementPlus);
 
-// ⚠️ 一定先挂渲染器，再挂设计器
 app.use(formCreate);
 app.use(FcDesigner);
 

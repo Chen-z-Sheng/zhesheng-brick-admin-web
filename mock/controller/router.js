@@ -76,7 +76,7 @@ const data = [
         path: "form",
         name: "Form",
         component: "@/views/vab/form/index",
-        meta: { title: "表单", permissions: ["admin"] },
+        meta: { title: "表单", permissions: ["form:list"] },
       },
       {
         path: "element",
