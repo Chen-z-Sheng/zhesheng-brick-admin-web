@@ -16,6 +16,38 @@ import "element-plus/dist/index.css";
 import formCreate from "@form-create/element-ui";
 import FcDesigner from "@form-create/designer";
 
+const ignoreErrors = [
+  "ResizeObserver loop completed with undelivered notifications",
+  "ResizeObserver loop limit exceeded"
+];
+
+window.addEventListener('error', e => {
+  let errorMsg = e.message;
+  ignoreErrors.forEach(m => {
+    if (errorMsg.startsWith(m)) {
+      console.error(errorMsg);
+      if (e.error) {
+        console.error(e.error.stack);
+      }
+
+      // 隐藏开发环境 overlay 报错界面
+      const resizeObserverErrDiv = document.getElementById(
+        'webpack-dev-server-client-overlay-div'
+      );
+      const resizeObserverErr = document.getElementById(
+        'webpack-dev-server-client-overlay'
+      );
+      if (resizeObserverErr) {
+        resizeObserverErr.setAttribute('style', 'display: none');
+      }
+      if (resizeObserverErrDiv) {
+        resizeObserverErrDiv.setAttribute('style', 'display: none');
+      }
+    }
+  });
+});
+
+
 const app = createApp(App);
 
 app.use(store);
