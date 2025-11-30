@@ -29,16 +29,12 @@
             <el-table-column prop="name" label="用户名" width="180" />
             <el-table-column label="角色">
               <template #default="{ row }">
-                <el-tag
-                  v-for="role in row.roles"
-                  :key="role"
-                  style="margin-right: 10px"
-                >
+                <el-tag v-for="role in row.roles" :key="role" style="margin-right: 10px">
                   {{ roleMap[role] || role }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="email" label="邮箱" width="200" />
+            <el-table-column prop="phone" label="电话" width="200" />
             <el-table-column label="操作" width="180">
               <template #default="{ row }">
                 <el-button type="text" @click="editUser(row)">编辑</el-button>
@@ -46,6 +42,19 @@
               </template>
             </el-table-column>
           </el-table>
+
+          <div style="margin-top: 16px; text-align: right">
+            <el-pagination
+              background
+              layout="total, sizes, prev, pager, next, jumper"
+              :current-page="userPage"
+              :page-size="userPageSize"
+              :page-sizes="[10, 20, 50, 100]"
+              :total="userTotal"
+              @size-change="handleUserSizeChange"
+              @current-change="handleUserCurrentChange"
+            />
+          </div>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -59,11 +68,11 @@
         <el-form-item label="权限">
           <el-checkbox-group v-model="currentRole.permissions">
             <el-checkbox
-              v-for="(label, key) in permissionMap"
-              :key="key"
-              :label="key"
+              v-for="perm in permissionOptions"
+              :key="perm.code"
+              :label="perm.code"
             >
-              {{ label }}
+              {{ perm.description || perm.code }}
             </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
@@ -82,16 +91,12 @@
         <el-form-item label="用户名">
           <el-input v-model="currentUser.name" />
         </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="currentUser.email" />
+        <el-form-item label="电话">
+          <el-input v-model="currentUser.phone" />
         </el-form-item>
         <el-form-item label="角色">
           <el-checkbox-group v-model="currentUser.roles">
-            <el-checkbox
-              v-for="(label, key) in roleMap"
-              :key="key"
-              :label="key"
-            >
+            <el-checkbox v-for="(label, key) in roleMap" :key="key" :label="key">
               {{ label }}
             </el-checkbox>
           </el-checkbox-group>
@@ -108,6 +113,18 @@
 </template>
 
 <script>
+import {
+  getRoleAll,
+  updateRole,
+  deleteRole,
+  getPermissionAll,
+  // getPermissionInfo,
+} from "@/api/permission";
+import {
+  getAll as getUserAll,
+  update as updateUser,
+  deleteUser as deleteUserApi,
+} from "@/api/user";
 export default {
   name: "Permissions",
   data() {
@@ -118,86 +135,175 @@ export default {
       currentRole: {
         id: "",
         name: "",
-        permissions: [],
+        permissions: [], // 存权限 code 数组
       },
       currentUser: {
         id: "",
         name: "",
-        email: "",
+        phone: "",
         roles: [],
       },
-      roles: [
-        {
-          id: "1",
-          name: "管理员",
-          permissions: ["user:create", "user:edit", "user:delete", "role:assign"],
-        },
-        {
-          id: "2",
-          name: "编辑者",
-          permissions: ["user:create", "user:edit"],
-        },
-        {
-          id: "3",
-          name: "访客",
-          permissions: [],
-        },
-      ],
-      users: [
-        {
-          id: "1",
-          name: "张三",
-          email: "zhangsan@example.com",
-          roles: ["1"],
-        },
-        {
-          id: "2",
-          name: "李四",
-          email: "lisi@example.com",
-          roles: ["2"],
-        },
-        {
-          id: "3",
-          name: "王五",
-          email: "wangwu@example.com",
-          roles: ["3"],
-        },
-      ],
-      permissionMap: {
-        "user:create": "创建用户",
-        "user:edit": "编辑用户",
-        "user:delete": "删除用户",
-        "role:assign": "分配角色",
-      },
-      roleMap: {
-        "1": "管理员",
-        "2": "编辑者",
-        "3": "访客",
-      },
+      roles: [],
+      users: [],
+      // 分页相关
+      userPage: 1,
+      userPageSize: 20,
+      userTotal: 0,
+      // 所有权限的选项列表
+      permissionOptions: [],
+      permissionMap: {},
+      roleMap: {},
     };
   },
+  created() {
+    this.loadRoles();
+    this.loadPermissions();
+    this.loadUsers();
+  },
   methods: {
+    async loadRoles() {
+      try {
+        const res = await getRoleAll();
+        const list = res.data || [];
+
+        this.roles = list.map((role) => ({
+          id: role.id,
+          name: role.name,
+          permissions: (role.permissions || []).map((p) => p.code),
+        }));
+
+        this.roleMap = this.roles.reduce((map, role) => {
+          map[role.id] = role.name;
+          return map;
+        }, {});
+      } catch (e) {
+        console.error(e);
+        this.$message.error("加载角色列表失败");
+      }
+    },
     editRole(role) {
       this.currentRole = { ...role };
       this.roleDialogVisible = true;
     },
-    deleteRole(role) {
-      this.$message.warning(`删除角色: ${role.name}`);
+
+    async deleteRole(row) {
+      try {
+        await deleteRole(row.id);
+        this.$message.success(`删除角色: ${row.name}`);
+        this.loadRoles();
+      } catch (e) {
+        console.error(e);
+        this.$message.error("删除角色失败");
+      }
     },
-    saveRole() {
-      this.$message.success("角色保存成功");
-      this.roleDialogVisible = false;
+    async saveRole() {
+      try {
+        await updateRole(this.currentRole.id, {
+          name: this.currentRole.name,
+          permissionCodes: this.currentRole.permissions,
+        });
+        this.$message.success("角色保存成功");
+        this.roleDialogVisible = false;
+        // 重新拉列表，拿最新数据
+        this.loadRoles();
+      } catch (e) {
+        console.error(e);
+        this.$message.error("角色保存失败");
+      }
     },
     editUser(user) {
       this.currentUser = { ...user };
       this.userDialogVisible = true;
     },
-    deleteUser(user) {
-      this.$message.warning(`删除用户: ${user.name}`);
+    async deleteUser(user) {
+      try {
+        await deleteUserApi(user.id);
+        this.$message.success(`删除用户: ${user.name}`);
+        this.loadUsers();
+      } catch (e) {
+        console.error(e);
+        this.$message.error("删除用户失败");
+      }
     },
-    saveUser() {
-      this.$message.success("用户保存成功");
-      this.userDialogVisible = false;
+    async saveUser() {
+      try {
+        const payload = {
+          username: this.currentUser.name,
+          phone: this.currentUser.phone,
+          roleId: this.currentUser.roles[0] || null,
+        };
+
+        await updateUser(this.currentUser.id, payload);
+
+        this.$message.success("用户保存成功");
+        this.userDialogVisible = false;
+        this.loadUsers(); // 刷新列表
+      } catch (e) {
+        console.error(e);
+        this.$message.error("用户保存失败");
+      }
+    },
+    async loadPermissions() {
+      try {
+        const res = await getPermissionAll();
+        const list = res.data || [];
+
+        // 保存原始列表，给 checkbox 用
+        this.permissionOptions = list;
+
+        // 构建 code -> description 映射，给表格 tag 用
+        this.permissionMap = list.reduce((map, perm) => {
+          map[perm.code] = perm.description || perm.code;
+          return map;
+        }, {});
+      } catch (e) {
+        console.error(e);
+        this.$message.error("加载权限列表失败");
+      }
+    },
+    // 加载用户列表
+    async loadUsers() {
+      try {
+        const res = await getUserAll({
+          page: this.userPage,
+          pageSize: this.userPageSize,
+          // 需要的话可以带上 orderBy / order
+          // orderBy: 'createdAt',
+          // order: 'DESC',
+        });
+
+        // 你的后端返回：{ code, message, data: { data: [...], meta: {...} }, timestamp }
+        const pageData = res.data || {}; // { data, meta }
+        const list = pageData.data || [];
+        const meta = pageData.meta || {};
+
+        this.users = list.map((u) => ({
+          id: u.id,
+          name: u.username,
+          phone: u.phone || u.remark || "",
+          roles: u.roleId ? [u.roleId] : [],
+        }));
+
+        // 保存一下分页信息
+        this.userTotal = meta.total || 0;
+        if (meta.page) this.userPage = meta.page;
+        if (meta.pageSize) this.userPageSize = meta.pageSize;
+      } catch (e) {
+        console.error(e);
+        this.$message.error("加载用户列表失败");
+      }
+    },
+    // pageSize 改变
+    handleUserSizeChange(size) {
+      this.userPageSize = size;
+      this.userPage = 1; // 一般改 pageSize 会重置到第 1 页
+      this.loadUsers();
+    },
+
+    // 当前页改变
+    handleUserCurrentChange(page) {
+      this.userPage = page;
+      this.loadUsers();
     },
   },
 };

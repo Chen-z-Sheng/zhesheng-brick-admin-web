@@ -76,8 +76,7 @@
     "sass-loader": "16.0.6",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.4",
-    "vue-loader": "^17.4.2",
-    "vue-template-compiler": "^2.7.16"
+    "vue-loader": "^17.4.2"
   },
   "keywords": [
     "vue",
