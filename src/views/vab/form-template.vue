@@ -39,7 +39,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { getForms, deleteForm } from "@/api/form";
+import { getFormTemplates, deleteFormTemplate } from "@/api/form-template";
 
 const router = useRouter();
 const q = ref("");
@@ -48,8 +48,8 @@ const list = ref([]); // 渲染用数组
 // 加载模板列表
 async function load() {
   try {
-    const resp = await getForms(); // resp = { list, pagination }
-    console.log("getForms =>", resp);
+    const resp = await getFormTemplates(); // resp = { list, pagination }
+    console.log("getFormTemplates =>", resp);
     list.value = Array.isArray(resp?.list) ? resp.list : [];
   } catch (err) {
     ElMessage.error("加载模板失败：" + (err.message || "服务器异常"));
@@ -72,17 +72,17 @@ const filtered = computed(() => {
 });
 
 function goCreate() {
-  router.push({ path: "/form", query: { mode: "new" } });
+  router.push({ path: "/form-template", query: { mode: "new" } });
 }
 function goEdit(id) {
-  router.push({ path: "/form", query: { id: String(id) } });
+  router.push({ path: "/form-template", query: { id: String(id) } });
 }
 function goPreview(id) {
-  router.push({ path: "/form", query: { id: String(id), preview: "true" } });
+  router.push({ path: "/form-template", query: { id: String(id), preview: "true" } });
 }
 async function doRemove(id) {
   try {
-    await deleteForm(id);
+    await deleteFormTemplate(id);
     ElMessage.success("删除成功！");
     load();
   } catch (err) {

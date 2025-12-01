@@ -52,7 +52,7 @@
       >
         未检测到 form-create 渲染器。请确认 main.js 已：
         <pre>import formCreate from '@form-create/element-ui'
-app.use(formCreate)</pre>
+          app.use(formCreate)</pre>
       </div>
       <form-create
         v-else
@@ -68,7 +68,7 @@ app.use(formCreate)</pre>
 import { ref, computed, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { getForm, createForm, updateForm } from "@/api/form";
+import { getFormTemplate, createFormTemplate, updateFormTemplate } from "@/api/form-template";
 
 const route = useRoute();
 const router = useRouter();
@@ -129,7 +129,7 @@ function cleanRule (nodes) {
 onMounted(async () => {
   if (!isNew.value && id.value) {
     try {
-      const detail = await getForm(id.value);
+      const detail = await getFormTemplate(id.value);
       meta.value = {
         name: (detail && detail.name) || "",
         teamName: (detail && detail.teamName) || "",
@@ -161,11 +161,11 @@ async function save () {
   saving.value = true;
   try {
     if (isNew.value) {
-      await createForm({ ...meta.value, ruleJson: rule, optionJson: option });
+      await createFormTemplate({ ...meta.value, ruleJson: rule, optionJson: option });
       ElMessage.success("模板创建成功");
       router.back();
     } else {
-      await updateForm(id.value, { ...meta.value, ruleJson: rule, optionJson: option });
+      await updateFormTemplate(id.value, { ...meta.value, ruleJson: rule, optionJson: option });
       ElMessage.success("模板更新成功");
     }
   } catch (e) {
