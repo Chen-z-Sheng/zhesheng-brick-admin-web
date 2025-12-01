@@ -36,6 +36,12 @@ export const constantRoutes = [
     name: "FormTemplateEdit",
     meta: { title: "编辑模板", hidden: true },
     component: () => import("@/views/form-template/designer.vue"),
+  }, 
+  {
+    path: "/form-schemes/edit",
+    name: "FormSchemesEdit",
+    meta: { title: "编辑方案", hidden: true },
+    component: () => import("@/views/form-schemes/designer.vue"),
   },
 ];
 
@@ -123,7 +129,7 @@ export const asyncRoutes = [
       {
         path: "form-schemes",
         name: "form-schemes",
-        component: () => import("@/views/vab/form-schemes.vue"),
+        component: () => import("@/views/form-schemes/index.vue"),
         meta: {
           title: "方案管理",
           permissions: ["form-schemes:list"],
