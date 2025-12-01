@@ -32,20 +32,11 @@ export const constantRoutes = [
     hidden: true,
   },
   {
-    path: '/form-template',
-    component: Layout,
-    hidden: true, // 不在侧边栏显示
-    children: [
-      {
-        path: '',
-        name: 'FormDesigner',
-        component: () => import('@/views/form-template/index.vue'),
-        meta: {
-          activeMenu: '/vab/form-template'     // 从列表页点进来时，让侧栏仍高亮“组件/表单模板”
-        }
-      }
-    ]
-  }
+    path: "/form-template/edit",
+    name: "FormTemplateEdit",
+    meta: { title: "编辑模板", hidden: true },
+    component: () => import("@/views/form-template/designer.vue"),
+  },
 ];
 
 export const asyncRoutes = [
@@ -123,10 +114,19 @@ export const asyncRoutes = [
       {
         path: "form-template",
         name: "form-template",
-        component: () => import("@/views/vab/form-template.vue"),
+        component: () => import("@/views/form-template/index.vue"),
         meta: {
           title: "表单模板",
           permissions: ["form-template:list"],
+        },
+      },
+      {
+        path: "form-schemes",
+        name: "form-schemes",
+        component: () => import("@/views/vab/form-schemes.vue"),
+        meta: {
+          title: "方案管理",
+          permissions: ["form-schemes:list"],
         },
       },
       // {
