@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkvue_admin_better=self.webpackChunkvue_admin_better||[]).push([["9941"],{89812:function(e,t,u){u.r(t),u.d(t,{getList:function(){return r}});var n=u(49289);function r(){return(0,n.default)({url:"https://api.vuejs-core.cn/getAd",method:"get"})}}}]);
