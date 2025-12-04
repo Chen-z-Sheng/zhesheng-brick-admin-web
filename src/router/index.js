@@ -34,13 +34,15 @@ export const constantRoutes = [
   {
     path: "/form-template/edit",
     name: "FormTemplateEdit",
-    meta: { title: "编辑模板", hidden: true },
+    hidden: true,
+    meta: { title: "编辑模板" },
     component: () => import("@/views/form-template/designer.vue"),
-  }, 
+  },
   {
     path: "/form-schemes/edit",
     name: "FormSchemesEdit",
-    meta: { title: "编辑方案", hidden: true },
+    hidden: true,
+    meta: { title: "编辑方案" },
     component: () => import("@/views/form-schemes/designer.vue"),
   },
 ];
