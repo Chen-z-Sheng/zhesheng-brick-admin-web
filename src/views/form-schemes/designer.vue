@@ -9,20 +9,35 @@
 
       <div class="grow" />
 
-      <el-button :loading="saving" type="primary" @click="onSubmit"> 保存 </el-button>
+      <el-button
+        :loading="saving"
+        type="primary"
+        @click="onSubmit"
+      > 保存 </el-button>
       <el-button @click="goBack">返回</el-button>
     </div>
 
     <div class="form-wrap">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="96px">
-        <el-form-item label="方案名称" prop="name">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="96px"
+      >
+        <el-form-item
+          label="方案名称"
+          prop="name"
+        >
           <el-input
             v-model="form.name"
             placeholder="例如：11.11京东珀莱雅222本845回900"
           />
         </el-form-item>
 
-        <el-form-item label="关联模板" prop="templateId">
+        <el-form-item
+          label="关联模板"
+          prop="templateId"
+        >
           <el-select
             v-model="form.templateId"
             placeholder="请选择模板"
@@ -47,7 +62,10 @@
           />
         </el-form-item>
 
-        <el-form-item label="状态" prop="status">
+        <el-form-item
+          label="状态"
+          prop="status"
+        >
           <el-radio-group v-model="form.status">
             <el-radio :label="1">启用</el-radio>
             <el-radio :label="2">草稿</el-radio>
@@ -63,8 +81,8 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { getScheme, createScheme, updateScheme } from "@/api/form-schemes"; // 改成你实际路径
-import { getFormTemplates } from "@/api/form-template"; // 复用已有模板接口
+import { getScheme, createScheme, updateScheme } from "@/api/form-schemes";
+import { getFormTemplates } from "@/api/form-template";
 
 const route = useRoute();
 const router = useRouter();
@@ -91,7 +109,7 @@ const rules = {
 const templateOptions = ref([]);
 
 // 加载模板列表供选择
-async function loadTemplates() {
+async function loadTemplates () {
   try {
     const resp = await getFormTemplates({ pageSize: 100 });
     templateOptions.value = Array.isArray(resp?.list) ? resp.list : [];
@@ -102,7 +120,7 @@ async function loadTemplates() {
 }
 
 // 加载方案详情（编辑模式）
-async function loadDetail() {
+async function loadDetail () {
   if (isNew.value || !id.value) return;
   try {
     const detail = await getScheme(id.value);
@@ -123,7 +141,7 @@ onMounted(async () => {
   await loadDetail();
 });
 
-function onSubmit() {
+function onSubmit () {
   formRef.value?.validate(async (valid) => {
     if (!valid) return;
 
@@ -153,7 +171,7 @@ function onSubmit() {
   });
 }
 
-function goBack() {
+function goBack () {
   // 返回上一个页面（一般是方案列表）
   router.back();
 }

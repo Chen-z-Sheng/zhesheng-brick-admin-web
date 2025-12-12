@@ -17,14 +17,26 @@
         class="w-40"
         @change="onSearch"
       >
-        <el-option :value="1" label="启用" />
-        <el-option :value="2" label="草稿" />
-        <el-option :value="0" label="停用" />
+        <el-option
+          :value="1"
+          label="启用"
+        />
+        <el-option
+          :value="2"
+          label="草稿"
+        />
+        <el-option
+          :value="0"
+          label="停用"
+        />
       </el-select>
 
       <div class="grow" />
 
-      <el-button type="primary" @click="goCreate">新建方案</el-button>
+      <el-button
+        type="primary"
+        @click="goCreate"
+      >新建方案</el-button>
     </div>
 
     <!-- 表格 -->
@@ -50,34 +62,70 @@
         <template #default="{ row }">
           <span v-if="row.templateName">
             {{ row.templateName }}
-            <span v-if="row.teamName" class="tpl-team"> （{{ row.teamName }}） </span>
+            <span
+              v-if="row.teamName"
+              class="tpl-team"
+            > （{{ row.teamName }}） </span>
           </span>
-          <span v-else class="text-muted">-</span>
+          <span
+            v-else
+            class="text-muted"
+          >-</span>
         </template>
       </el-table-column>
 
-      <el-table-column prop="status" label="状态" width="120" align="center">
+      <el-table-column
+        prop="status"
+        label="状态"
+        width="120"
+        align="center"
+      >
         <template #default="{ row }">
-          <el-tag :type="statusTagType(row.status)" size="small">
+          <el-tag
+            :type="statusTagType(row.status)"
+            size="small"
+          >
             {{ statusText(row.status) }}
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column prop="createdAt" label="创建时间" width="180" align="center">
+      <el-table-column
+        prop="createdAt"
+        label="创建时间"
+        width="180"
+        align="center"
+      >
         <template #default="{ row }">
           {{ formatTime(row.createdAt) }}
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" width="200" fixed="right" align="center">
+      <el-table-column
+        label="操作"
+        width="200"
+        fixed="right"
+        align="center"
+      >
         <template #default="{ row }">
-          <el-button size="small" type="primary" link @click="goEdit(row.id)">
+          <el-button
+            size="small"
+            type="primary"
+            link
+            @click="goEdit(row.id)"
+          >
             编辑
           </el-button>
-          <el-popconfirm title="确认删除此方案？" @confirm="doRemove(row.id)">
+          <el-popconfirm
+            title="确认删除此方案？"
+            @confirm="doRemove(row.id)"
+          >
             <template #reference>
-              <el-button size="small" type="danger" link> 删除 </el-button>
+              <el-button
+                size="small"
+                type="danger"
+                link
+              > 删除 </el-button>
             </template>
           </el-popconfirm>
         </template>
@@ -85,14 +133,24 @@
     </el-table>
 
     <!-- 空状态 -->
-    <el-empty v-if="!loading && list.length === 0" description="暂无方案" class="mt-4">
+    <el-empty
+      v-if="!loading && list.length === 0"
+      description="暂无方案"
+      class="mt-4"
+    >
       <template #extra>
-        <el-button type="primary" @click="goCreate">去新建</el-button>
+        <el-button
+          type="primary"
+          @click="goCreate"
+        >去新建</el-button>
       </template>
     </el-empty>
 
     <!-- 分页 -->
-    <div class="pager" v-if="pagination.total > 0">
+    <div
+      class="pager"
+      v-if="pagination.total > 0"
+    >
       <el-pagination
         v-model:current-page="pagination.page"
         v-model:page-size="pagination.pageSize"
@@ -124,14 +182,12 @@ const pagination = ref({
   total: 0,
 });
 
-// 加载列表（带分页 & 简单筛选）
-async function load() {
+async function load () {
   loading.value = true;
   try {
     const params = {
       page: pagination.value.page,
       pageSize: pagination.value.pageSize,
-      // 后端如果支持关键词筛选，可以传个 keyword 或 name，看你 BasePage 怎么设计的
       keyword: q.value || undefined,
       status: status.value ?? undefined,
     };
@@ -156,34 +212,34 @@ async function load() {
 
 onMounted(load);
 
-function onSearch() {
+function onSearch () {
   pagination.value.page = 1;
   load();
 }
 
-function onPageChange(page) {
+function onPageChange (page) {
   pagination.value.page = page;
   load();
 }
 
-function onPageSizeChange(size) {
+function onPageSizeChange (size) {
   pagination.value.pageSize = size;
   pagination.value.page = 1;
   load();
 }
 
-function goCreate() {
+function goCreate () {
   router.push({ path: "/form-schemes/edit", query: { mode: "new" } });
 }
 
-function goEdit(id) {
+function goEdit (id) {
   router.push({
     path: "/form-schemes/edit",
     query: { id: String(id) },
   });
 }
 
-async function doRemove(id) {
+async function doRemove (id) {
   try {
     await deleteScheme(id);
     ElMessage.success("删除成功！");
@@ -199,7 +255,7 @@ async function doRemove(id) {
 }
 
 // 状态相关
-function statusText(v) {
+function statusText (v) {
   switch (v) {
     case 0:
       return "停用";
@@ -212,7 +268,7 @@ function statusText(v) {
   }
 }
 
-function statusTagType(v) {
+function statusTagType (v) {
   switch (v) {
     case 0:
       return "info";
@@ -225,7 +281,7 @@ function statusTagType(v) {
   }
 }
 
-function formatTime(v) {
+function formatTime (v) {
   if (!v) return "";
   try {
     const d = typeof v === "string" ? new Date(v) : v;
